@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -40,14 +41,14 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryResponseDto findCategoryById(Long id){
         return categoryRepository.findById(id)
                 .map(mapper::toResponseDto)
-                .orElseThrow(() -> new EntityNotFoundException("Category not found!"));
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Category Id: '%s' not found ", id)));
     }
 
     @Override
     @Transactional
     public void deleteCategory(Long id){
         var category = categoryRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Category not found!"));
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Category Id: '%s' not found ", id)));
 
         Consumer<Category> deleteAction = categoryRepository::delete;
         Consumer<Category> inactiveAction = this::inactiveCategory;
@@ -60,10 +61,10 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public CategoryResponseDto activeCategory(Long id){
         var category = categoryRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Category not found!"));
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Category Id: '%s' not found ", id)));
         Optional.of(category.getActive())
                 .filter(active -> !active)
-                .orElseThrow(() -> new CategoryActiveException("Category is already active!"));
+                .orElseThrow(() -> new CategoryActiveException(String.format("Category Id: '%s' is already active ", id)));
         category.setActive(true);
         return mapper.toResponseDto(categoryRepository.save(category));
     }
@@ -71,14 +72,13 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public CategoryResponseDto modifyCategoryName(Long id, String name) {
-            var category = categoryRepository.findById(id)
-                    .orElseThrow(() -> new EntityNotFoundException("Category not found!"));
-            category.setName(name);
-            try{
-                return mapper.toResponseDto(categoryRepository.save(category));
-            } catch (RuntimeException e){
-                 throw new DataUniqueViolationException(String.format("Category '%s' already exists", name));
-            }
+        var category = categoryRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Category Id: '%s' not found ", id)));
+        Optional.of(categoryRepository.existsByName(name))
+                .filter(exist -> !exist)
+                .orElseThrow(() -> new DataUniqueViolationException(String.format("Category '%s' already exists", name)));
+        category.setName(name);
+        return mapper.toResponseDto(categoryRepository.save(category));
     }
 
     @Override
@@ -93,7 +93,7 @@ public class CategoryServiceImpl implements CategoryService {
     private void inactiveCategory(Category category) {
         Optional.of(category.getActive())
                 .filter(active -> active)
-                .orElseThrow(() -> new CategoryActiveException("Category is already inactive!"));
+                .orElseThrow(() -> new CategoryActiveException(String.format("Category Id: '%s' is already inactive ", category.getId())));
         category.setActive(false);
         categoryRepository.save(category);
     }
