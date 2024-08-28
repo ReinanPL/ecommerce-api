@@ -39,33 +39,33 @@ public class CategoryServiceTest {
 
     @Test
     public void saveCategory_WithValidData_ShouldSaveAndReturnResponseDto() {
-        when(mapper.toEntity(categoryRequestDto)).thenReturn(category);
-        when(mapper.toResponseDto(category)).thenReturn(categoryResponseDto);
-        when(categoryRepository.save(category)).thenReturn(category);
+        when(mapper.toEntity(CATEGORY_REQUEST_DTO)).thenReturn(CATEGORY);
+        when(mapper.toResponseDto(CATEGORY)).thenReturn(CATEGORY_RESPONSE_DTO);
+        when(categoryRepository.save(CATEGORY)).thenReturn(CATEGORY);
 
-        CategoryResponseDto actualResponseDto = categoryService.saveCategory(categoryRequestDto);
+        CategoryResponseDto actualResponseDto = categoryService.saveCategory(CATEGORY_REQUEST_DTO);
 
-        assertThat(actualResponseDto).isEqualTo(categoryResponseDto);
-        verify(categoryRepository, times(1)).save(eq(category));
+        assertThat(actualResponseDto).isEqualTo(CATEGORY_RESPONSE_DTO);
+        verify(categoryRepository, times(1)).save(eq(CATEGORY));
     }
 
     @Test
     public void saveCategory_WithNameAlreadyRegistered_ShouldThrowDataUniqueViolationException() {
-        when(mapper.toEntity(categoryRequestDto)).thenReturn(category);
-        when(categoryRepository.save(category)).thenThrow(new DataUniqueViolationException("Category already exists"));
+        when(mapper.toEntity(CATEGORY_REQUEST_DTO)).thenReturn(CATEGORY);
+        when(categoryRepository.save(CATEGORY)).thenThrow(new DataUniqueViolationException("Category already exists"));
 
-        assertThrows(DataUniqueViolationException.class, () -> categoryService.saveCategory(categoryRequestDto));
-        verify(categoryRepository, times(1)).save(category);
+        assertThrows(DataUniqueViolationException.class, () -> categoryService.saveCategory(CATEGORY_REQUEST_DTO));
+        verify(categoryRepository, times(1)).save(CATEGORY);
     }
 
     @Test
     public void findCategoryById_WithExistingId_ShouldReturnResponseDto() {
-        when(categoryRepository.findById(1L)).thenReturn(Optional.of(category));
-        when(mapper.toResponseDto(category)).thenReturn(categoryResponseDto);
+        when(categoryRepository.findById(1L)).thenReturn(Optional.of(CATEGORY));
+        when(mapper.toResponseDto(CATEGORY)).thenReturn(CATEGORY_RESPONSE_DTO);
 
         CategoryResponseDto actualResponseDto = categoryService.findCategoryById(1L);
 
-        assertThat(actualResponseDto).isEqualTo(categoryResponseDto);
+        assertThat(actualResponseDto).isEqualTo(CATEGORY_RESPONSE_DTO);
         verify(categoryRepository, times(1)).findById(1L);
     }
 
@@ -82,29 +82,29 @@ public class CategoryServiceTest {
     @Test
     public void testDeleteCategory_WhenCategoryExistsAndHasNoProducts_ShouldDeleteCategory() {
 
-        when(categoryRepository.findById(1L)).thenReturn(Optional.of(category));
+        when(categoryRepository.findById(1L)).thenReturn(Optional.of(CATEGORY));
 
         categoryService.deleteCategory(1L);
 
-        verify(categoryRepository, times(1)).delete(category);
+        verify(categoryRepository, times(1)).delete(CATEGORY);
     }
 
     @Test
     public void testDeleteCategory_WhenCategoryExistsAndHasProducts_ShouldInactiveCategory() {
-        when(categoryRepository.findById(1L)).thenReturn(Optional.of(categoryActive));
-        when(categoryRepository.save(categoryActive)).thenReturn(categoryInactive);
+        when(categoryRepository.findById(1L)).thenReturn(Optional.of(CATEGORY_ACTIVE));
+        when(categoryRepository.save(CATEGORY_ACTIVE)).thenReturn(CATEGORY_INACTIVE);
 
         // Act
         categoryService.deleteCategory(1L);
 
         // Assert
-        verify(categoryRepository, never()).delete(categoryActive);
-        verify(categoryRepository, times(1)).save(categoryActive);
+        verify(categoryRepository, never()).delete(CATEGORY_ACTIVE);
+        verify(categoryRepository, times(1)).save(CATEGORY_ACTIVE);
     }
 
     @Test
     public void inactiveCategory_WithCategoryAlreadyInactive_ShouldThrowCategoryActiveException() {
-        when(categoryRepository.findById(1L)).thenReturn(Optional.of(categoryAlreadyInactive));
+        when(categoryRepository.findById(1L)).thenReturn(Optional.of(CATEGORY_ALREADY_INACTIVE));
 
         assertThrows(CategoryActiveException.class, () -> categoryService.deleteCategory(1L));
 
@@ -113,20 +113,20 @@ public class CategoryServiceTest {
 
     @Test
     public void activateCategory_WithInactiveCategory_ShouldReturnActivatedCategory() {
-        when(categoryRepository.findById(1L)).thenReturn(Optional.of(categoryInactive));
-        when(categoryRepository.save(categoryInactive)).thenReturn(categoryActive);
-        when(mapper.toResponseDto(categoryActive)).thenReturn(categoryResponseDto);
+        when(categoryRepository.findById(1L)).thenReturn(Optional.of(CATEGORY_INACTIVE));
+        when(categoryRepository.save(CATEGORY_INACTIVE)).thenReturn(CATEGORY_ACTIVE);
+        when(mapper.toResponseDto(CATEGORY_ACTIVE)).thenReturn(CATEGORY_RESPONSE_DTO);
 
         CategoryResponseDto actualResponseDtoList = categoryService.activeCategory(1L);
 
-        verify(categoryRepository, times(1)).save(categoryInactive);
+        verify(categoryRepository, times(1)).save(CATEGORY_INACTIVE);
         verify(categoryRepository, times(1)).findById(1L);
-        assertThat(categoryResponseDto.active()).isEqualTo(true);
+        assertThat(CATEGORY_RESPONSE_DTO.active()).isEqualTo(true);
     }
 
     @Test
     public void activateCategory_WithAlreadyActiveCategory_ShouldThrowCategoryActiveException() {
-        when(categoryRepository.findById(1L)).thenReturn(Optional.of(categoryAlreadyActive));
+        when(categoryRepository.findById(1L)).thenReturn(Optional.of(CATEGORY_ALREADY_ACTIVE));
 
         assertThrows(CategoryActiveException.class, () -> categoryService.activeCategory(1L));
 
@@ -136,25 +136,25 @@ public class CategoryServiceTest {
     @Test
     public void modifyCategoryName_WithValidNewName_ShouldReturnUpdatedCategory() {
         String newCategoryName = "New Category Name";
-        when(categoryRepository.findById(1L)).thenReturn(Optional.of(category));
-        when(categoryRepository.save(category)).thenReturn(categoryNewName);
-        when(mapper.toResponseDto(categoryNewName)).thenReturn(categoryResponseNewNameDto);
+        when(categoryRepository.findById(1L)).thenReturn(Optional.of(CATEGORY));
+        when(categoryRepository.save(CATEGORY)).thenReturn(CATEGORY_NEW_NAME);
+        when(mapper.toResponseDto(CATEGORY_NEW_NAME)).thenReturn(CATEGORY_RESPONSE_NEW_NAME_DTO);
 
         CategoryResponseDto actualResponseDto = categoryService.modifyCategoryName(1L, newCategoryName);
 
-        assertEquals(categoryResponseNewNameDto, actualResponseDto);
-        verify(categoryRepository, times(1)).save(category);
+        assertEquals(CATEGORY_RESPONSE_NEW_NAME_DTO, actualResponseDto);
+        verify(categoryRepository, times(1)).save(CATEGORY);
     }
 
     @Test
     public void getAllCategories_WithCategories_ShouldReturnListOfCategoryDtos() {
-        when(categoryRepository.findAll()).thenReturn(Collections.singletonList(category));
-        when(mapper.toResponseDto(category)).thenReturn(categoryResponseDto);
+        when(categoryRepository.findAll()).thenReturn(Collections.singletonList(CATEGORY));
+        when(mapper.toResponseDto(CATEGORY)).thenReturn(CATEGORY_RESPONSE_DTO);
 
         List<CategoryResponseDto> actualResponseDtoList = categoryService.getAllCategories();
 
         assertEquals(1, actualResponseDtoList.size());
-        assertEquals(categoryResponseDto, actualResponseDtoList.get(0));
+        assertEquals(CATEGORY_RESPONSE_DTO, actualResponseDtoList.get(0));
         verify(categoryRepository, times(1)).findAll();
     }
 

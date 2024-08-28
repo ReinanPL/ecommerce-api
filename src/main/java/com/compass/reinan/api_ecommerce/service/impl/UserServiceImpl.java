@@ -46,9 +46,9 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void deleteUserByCpf(String cpf) {
-        userRepository.findByCpf(cpf)
+        var user = userRepository.findByCpf(cpf)
                         .orElseThrow(() -> new EntityNotFoundException(String.format("Cpf: '%s' not found ", cpf)));
-        userRepository.deleteByCpf(cpf);
+        userRepository.delete(user);
     }
 
     @Override

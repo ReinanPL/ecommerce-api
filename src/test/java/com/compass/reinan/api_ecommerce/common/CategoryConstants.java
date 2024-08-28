@@ -11,16 +11,16 @@ import java.util.List;
 
 public class CategoryConstants {
 
-    public static final CategoryResponseDto categoryResponseDto = new CategoryResponseDto(1L, "Test Category", true);
-    public static final CategoryRequestDto categoryRequestDto = new CategoryRequestDto("Test Category");
-    public static final CategoryResponseDto categoryResponseNewNameDto = new CategoryResponseDto(1L,"New Test Category", true);
+    public static final CategoryResponseDto CATEGORY_RESPONSE_DTO = new CategoryResponseDto(1L, "Test Category", true);
+    public static final CategoryRequestDto CATEGORY_REQUEST_DTO = new CategoryRequestDto("Test Category");
+    public static final CategoryResponseDto CATEGORY_RESPONSE_NEW_NAME_DTO = new CategoryResponseDto(1L,"New Test Category", true);
 
-    public static final Category category = new Category(1L, "Test Category", true ,Collections.emptyList());
-    public static final Category categoryNewName = new Category(1L, "New Test Category", true ,Collections.emptyList());
+    public static final Category CATEGORY = new Category(1L, "Test Category", true ,Collections.emptyList());
+    public static final Category CATEGORY_NEW_NAME = new Category(1L, "New Test Category", true ,Collections.emptyList());
 
 
-    public static final Category categoryActive = new Category(1L, "Test Category", true , List.of(new Product(1L, "Test Product", 10, BigDecimal.valueOf(10.1), true, null, null)));
-    public static final Category categoryInactive = new Category(1L, "Test Category", false, List.of(new Product(1L, "Test Product", 10, BigDecimal.valueOf(10.1), true, null, null)));
-    public static final Category categoryAlreadyInactive = new Category(1L, "Test Category", false, List.of(new Product(1L, "Test Product", 10, BigDecimal.valueOf(10.1), true, null, null)));
-    public static final Category categoryAlreadyActive = new Category(1L, "Test Category", true , List.of(new Product(1L, "Test Product", 10, BigDecimal.valueOf(10.1), true, null, null)));
+    public static final Category CATEGORY_ACTIVE = new Category(1L, "Test Category", true , List.of(new Product(1L, "Test Product", 10, BigDecimal.valueOf(10.1), true, null, null)));
+    public static final Category CATEGORY_INACTIVE = new Category(1L, "Test Category", false, List.of(new Product(1L, "Test Product", 10, BigDecimal.valueOf(10.1), true, null, null)));
+    public static final Category CATEGORY_ALREADY_INACTIVE = new Category(1L, "Test Category", false, List.of(new Product(1L, "Test Product", 10, BigDecimal.valueOf(10.1), true, null, null)));
+    public static final Category CATEGORY_ALREADY_ACTIVE = new Category(1L, "Test Category", true , List.of(new Product(1L, "Test Product", 10, BigDecimal.valueOf(10.1), true, null, null)));
 }
