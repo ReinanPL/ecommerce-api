@@ -1,5 +1,7 @@
 package com.compass.reinan.api_ecommerce.domain.entity;
 
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,6 +10,7 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -24,7 +27,9 @@ public class Sale implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Instant instant;
+    @Column(name = "date_sale")
+    private Instant dateSale;
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_cpf")
     private User user;

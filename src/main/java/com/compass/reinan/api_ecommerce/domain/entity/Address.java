@@ -1,6 +1,5 @@
 package com.compass.reinan.api_ecommerce.domain.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -21,9 +20,9 @@ public class Address implements Serializable {
     private Long id;
     @Column(name = "cep", nullable = false, length =8)
     private String cep;
-    @Column(name = "city", nullable = false, length =50)
+    @Column(name = "city", nullable = false, length =20)
     private String city;
-    @Column(name = "state", nullable = false, length =50)
+    @Column(name = "state", nullable = false, length =2)
     private String state;
     @Column(name = "street", nullable = false, length =100)
     private String street;

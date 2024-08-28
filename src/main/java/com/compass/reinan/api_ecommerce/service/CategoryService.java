@@ -6,7 +6,6 @@ import com.compass.reinan.api_ecommerce.domain.dto.category.CategoryResponseDto;
 import java.util.List;
 
 public interface CategoryService {
-
     CategoryResponseDto saveCategory(CategoryRequestDto categoryRequest);
     CategoryResponseDto findCategoryById(Long id);
     void deleteCategory(Long id);

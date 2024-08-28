@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +36,11 @@ public class User implements Serializable {
     private Address address;
     @OneToMany(mappedBy = "user")
     private List<Sale> sales = new ArrayList<>();
+
+    @Column(name = "reset_password_token")
+    private String resetPasswordToken;
+    @Column(name = "token_expiration_date")
+    private Instant tokenExpirationDate;
 
     public enum Role {
         ADMIN, CLIENT

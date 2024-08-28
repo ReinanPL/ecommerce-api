@@ -10,6 +10,6 @@ public class SpringTimezoneConfig {
 
     @PostConstruct
     public void timezoneConfig(){
-        TimeZone.setDefault(TimeZone.getTimeZone("America/Sao_Paulo"));
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
     }
 }
