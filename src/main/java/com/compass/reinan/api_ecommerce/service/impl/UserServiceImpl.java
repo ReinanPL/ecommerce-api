@@ -11,6 +11,7 @@ import com.compass.reinan.api_ecommerce.repository.UserRepository;
 import com.compass.reinan.api_ecommerce.service.UserService;
 import com.compass.reinan.api_ecommerce.service.mapper.UserMapper;
 import lombok.AllArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,14 +26,17 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserMapper mapper;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
     public UserResponse saveUser(UserCreateRequest userRequest) {
-        Optional.of(userRepository.existsByCpf(userRequest.cpf()))
+        var user = mapper.toEntity(userRequest);
+        Optional.of(userRepository.existsByCpf(user.getCpf()))
                 .filter(exists ->!exists)
                 .orElseThrow(() -> new DataUniqueViolationException(String.format("Cpf '%s' already exists", userRequest.cpf())));
-        return mapper.toResponse(userRepository.save(mapper.toEntity(userRequest)));
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        return mapper.toResponse(userRepository.save(user));
     }
 
     @Override
@@ -73,10 +77,10 @@ public class UserServiceImpl implements UserService {
         var user = userRepository.findByCpf(cpf)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Cpf: '%s' not found ", cpf)));
         Optional.of(user)
-                .filter(u -> oldPassword.equals(u.getPassword()))
+                .filter(u -> passwordEncoder.matches(oldPassword, user.getPassword()))
                 .orElseThrow(() -> new PasswordInvalidException("Old password does not match."));
 
-        user.setPassword(newPassword);
+        user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
     }
 
@@ -85,9 +89,10 @@ public class UserServiceImpl implements UserService {
     public UserResponse updateUserRole(String cpf, String role) {
         var user = userRepository.findByCpf(cpf)
                .orElseThrow(() -> new EntityNotFoundException(String.format("Cpf: '%s' not found ", cpf)));
-        if(Objects.equals(user.getRole().toString(), role.toUpperCase())){
-            throw new DataUniqueViolationException(String.format("The user already have this role: '%s'", role));
-        }
+        Optional.of(Objects.equals(user.getRole().toString(), role.toUpperCase()))
+                .filter(sameRole ->!sameRole)
+                .orElseThrow(() -> new PasswordInvalidException(String.format("The user already have this role: '%s'", role)));
+
         user.setRole(User.Role.valueOf(role.toUpperCase()));
         return mapper.toResponse(userRepository.save(user));
     }

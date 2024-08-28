@@ -14,12 +14,11 @@ VALUES ('12345678', 'São Paulo', 'SP', 'Rua dos Exemplos', '123', 'Apartamento 
 
 
 INSERT INTO users (cpf, first_name, last_name, email, password, role, address_id)
-VALUES
-    ('63235354085', 'John', 'Doe', 'johndoe@example.com', 'strong_password', 'CLIENT',1),
-    ('25916279086', 'Jane', 'Smith', 'janesmith@example.com', 'another_strong_password', 'ADMIN',2),
-    ('56536730054', 'Michael', 'Jordan', 'mjordan23@gmail.com', 'secret_slamdunk', 'CLIENT',3),
-    ('79816657015', 'Alice', 'Wonderland', 'aliceinwonderland@fairytales.com', 'curious_password', 'CLIENT',4);
-
+VALUES('63235354085', 'John', 'Doe', 'johndoe@example.com', '$2a$12$fHZNyhLWJAWsBQ5A4qmabOXlsq.qAj68b/7k9Cc/imPNDu2JLSo8u', 'CLIENT',1),
+('25916279086', 'Jane', 'Smith', 'janesmith@example.com', '$2a$12$QCH8s1mb6MfGFw0MLKnnHuQ36Gj39x9lUtTxvIpV8WQI6/mo8/BTa', 'ADMIN',2),
+('56536730054', 'Michael', 'Jordan', 'mjordan23@gmail.com', '$2a$12$pzcAajDhUpBTGtXBYc9dquEjgMAEAlaE2P22szhS.budoJeMLbjoW', 'CLIENT',3),
+('79816657015', 'Alice', 'Wonderland', 'aliceinwonderland@fairytales.com', '$2a$12$FQl6gdoJjNVPDfoP3hz/r.zNPT50BFe1X/dE8SwrG980kSGF6AWma', 'CLIENT',4);
+-- password: 123456
 
 INSERT INTO Products (name, quantity_in_stock, price, category_id, active)
 VALUES ('Smartphone Galaxy Z Flip 4', 10, 5999.99, (SELECT id FROM Categories WHERE name = 'Eletrônicos'), TRUE),

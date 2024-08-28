@@ -8,11 +8,14 @@ import com.compass.reinan.api_ecommerce.exception.PasswordInvalidException;
 import com.compass.reinan.api_ecommerce.repository.UserRepository;
 import com.compass.reinan.api_ecommerce.service.impl.UserServiceImpl;
 import com.compass.reinan.api_ecommerce.service.mapper.UserMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Collections;
 import java.util.List;
@@ -30,10 +33,19 @@ public class UserServiceTest {
     private UserRepository userRepository;
 
     @Mock
+    private PasswordEncoder passwordEncoder;
+
+    @Mock
     private UserMapper mapper;
 
     @InjectMocks
     private UserServiceImpl userService;
+
+    @BeforeEach
+    void setUp() {
+        passwordEncoder = new BCryptPasswordEncoder();
+        userService = new UserServiceImpl(userRepository, mapper, passwordEncoder);
+    }
 
     @Test
     public void saveUser_withValidData_shouldSaveAndReturnResponseDto() {
@@ -115,13 +127,13 @@ public class UserServiceTest {
 
     @Test
     public void setPassword_WithValidData() {
-        when(userRepository.findByCpf(EXISTING_CPF)).thenReturn(Optional.of(USER_EXISTING));
+        when(userRepository.findByCpf(EXISTING_CPF)).thenReturn(Optional.of(USER_PASSWORD_ENCRYPTED));
 
         userService.updateUserPassword(EXISTING_CPF, "123456", "new_password", "new_password");
 
         var user = userRepository.findByCpf(EXISTING_CPF);
 
-        assertEquals("new_password", user.get().getPassword());
+        assertTrue(passwordEncoder.matches("new_password", user.get().getPassword()));
         verify(userRepository, times(2)).findByCpf(EXISTING_CPF);
     }
 

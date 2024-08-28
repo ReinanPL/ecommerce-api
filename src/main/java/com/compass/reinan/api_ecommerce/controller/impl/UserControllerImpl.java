@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,11 +28,13 @@ public class UserControllerImpl implements UserController {
 
     @Override
     @GetMapping("/{cpf}")
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN') or (hasAuthority('SCOPE_CLIENT') and #cpf == authentication.name)")
     public ResponseEntity<UserResponse> getUserByCpf(@PathVariable String cpf) {
         return ResponseEntity.ok(userService.getUserByCpf(cpf));
     }
 
     @Override
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     @DeleteMapping("/{cpf}")
     public ResponseEntity<Void> deleteUserByCpf(@PathVariable String cpf) {
         userService.deleteUserByCpf(cpf);
@@ -39,12 +42,14 @@ public class UserControllerImpl implements UserController {
     }
 
     @Override
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN') or (hasAuthority('SCOPE_CLIENT') and #cpf == authentication.name)")
     @PatchMapping("/{cpf}")
     public ResponseEntity<UserResponse> updateUserEmail(@PathVariable String cpf, @RequestBody @Valid EmailUpdateRequest emailDto) {
         return ResponseEntity.ok(userService.updateUserEmail(cpf, emailDto.newEmail()));
     }
 
     @Override
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN') or (hasAuthority('SCOPE_CLIENT') and #cpf == authentication.name)")
     @PatchMapping("/{cpf}/password")
     public ResponseEntity<Void> setUserPassword(@PathVariable String cpf, @RequestBody @Valid UpdatePasswordRequest password){
         userService.updateUserPassword(cpf, password.oldPassword(), password.newPassword(), password.confirmPassword());
@@ -52,18 +57,21 @@ public class UserControllerImpl implements UserController {
     }
 
     @Override
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     @PatchMapping("/{cpf}/role")
     public ResponseEntity<UserResponse> updateUserRole(@PathVariable String cpf, @RequestBody @Valid RoleUpdateRequest role) {
         return ResponseEntity.ok().body(userService.updateUserRole(cpf, role.role()));
     }
 
     @Override
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN') or (hasAuthority('SCOPE_CLIENT') and #cpf == authentication.name)")
     @PatchMapping("/{cpf}/address")
     public ResponseEntity<UserResponse> updateUserAddress(@PathVariable String cpf, @RequestBody @Valid AddressRequest addressDto) {
         return ResponseEntity.ok(userService.updateUserAddress(cpf, addressDto));
     }
 
     @Override
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     @GetMapping
     public ResponseEntity<List<UserResponse>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());

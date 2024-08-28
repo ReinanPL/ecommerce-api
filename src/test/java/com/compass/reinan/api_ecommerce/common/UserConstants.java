@@ -26,6 +26,7 @@ public class UserConstants {
     public static final User NEW_USER_ROLE = new User("52624127003", "John", "Doe", "johndoe@email.com", "123456", User.Role.CLIENT, ADDRESS, null, null, null);
 
 
+    public static final User USER_PASSWORD_ENCRYPTED = new User("52624127003", "John", "Doe", "johndoe@email.com", "$2a$12$QJPRdVvwJGjqempA7cv8qecnOSjxGIKKubGt9dle2cIGkvmQQqOcS", User.Role.CLIENT, ADDRESS, null, null, null);
     public static final String EXISTING_CPF = "52624127003";
     public static final String EXISTING_CPF_ADMIN = "93619622051";
     public static final String NON_EXISTING_CPF = "12345678901";

@@ -21,8 +21,7 @@ public interface UserController {
 
     @Operation(summary = "Create a new user", description = "Resource for creating a new user",
             responses = {
-                    @ApiResponse(responseCode = "201", description
-                            = "Resource created with success",
+                    @ApiResponse(responseCode = "201", description = "Resource created with success",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponse.class))),
                     @ApiResponse(responseCode = "409", description = "User cpf already registered in the system",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
@@ -32,6 +31,7 @@ public interface UserController {
     ResponseEntity<UserResponse> saveUser(@RequestBody @Valid UserCreateRequest userRequest);
 
     @Operation(summary = "Retrieve a user by CPF", description = "Retrieve a user by CPF",
+            security = @SecurityRequirement(name = "security"),
             responses = {
                     @ApiResponse(responseCode = "200", description = "Resource retrieved successfully",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponse.class))),
@@ -41,6 +41,7 @@ public interface UserController {
     ResponseEntity<UserResponse> getUserByCpf(@PathVariable String cpf);
 
     @Operation(summary = "Delete a user by CPF", description = "Delete a user by CPF",
+            security = @SecurityRequirement(name = "security"),
             responses = {
                     @ApiResponse(responseCode = "204", description = "Resource deleted successfully"),
                     @ApiResponse(responseCode = "404", description = "Resource not found",
@@ -48,7 +49,8 @@ public interface UserController {
             })
     ResponseEntity<Void> deleteUserByCpf(@PathVariable String cpf);
 
-    @Operation(summary = "Modify a user email", description = "Modify a user email",
+    @Operation(summary = "Update a user email", description = "Modify a user email",
+            security = @SecurityRequirement(name = "security"),
             responses = {
                     @ApiResponse(responseCode = "200", description = "Resource updated successfully",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponse.class))),
@@ -62,7 +64,7 @@ public interface UserController {
             })
     ResponseEntity<UserResponse> updateUserEmail(@PathVariable String cpf, @RequestBody @Valid EmailUpdateRequest emailDto);
 
-    @Operation(summary = "Update password", description = "Update client password.",
+    @Operation(summary = "Update a password", description = "Update client password.",
             security = @SecurityRequirement(name = "security"),
             responses = {
                     @ApiResponse(responseCode = "204", description = "Password updated successfully",
@@ -76,7 +78,8 @@ public interface UserController {
             })
     ResponseEntity<Void> setUserPassword(@PathVariable String cpf, @RequestBody @Valid UpdatePasswordRequest password);
 
-    @Operation(summary = "Modify a user role", description = "Modify a user role",
+    @Operation(summary = "Update a user role", description = "Modify a user role",
+            security = @SecurityRequirement(name = "security"),
             responses = {
                     @ApiResponse(responseCode = "200", description = "Resource updated successfully",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponse.class))),
@@ -91,7 +94,8 @@ public interface UserController {
 
     ResponseEntity<UserResponse> updateUserRole(@PathVariable String cpf, @RequestBody RoleUpdateRequest role);
 
-    @Operation(summary = "Modify a user address", description = "Modify a user address",
+    @Operation(summary = "Update a user address", description = "Modify a user address",
+            security = @SecurityRequirement(name = "security"),
             responses = {
                     @ApiResponse(responseCode = "200", description = "Resource updated successfully",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponse.class))),
@@ -104,6 +108,7 @@ public interface UserController {
     ResponseEntity<UserResponse> updateUserAddress(String cpf,  AddressRequest addressDto);
 
     @Operation(summary = "List all users", description = "List all registered users",
+            security = @SecurityRequirement(name = "security"),
             responses = {
                     @ApiResponse(responseCode = "200", description = "List of all registered users", content = @Content(mediaType = "application/json",
                             array = @ArraySchema(schema = @Schema(implementation = UserResponse.class))))

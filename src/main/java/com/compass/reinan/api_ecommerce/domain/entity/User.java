@@ -1,10 +1,12 @@
 package com.compass.reinan.api_ecommerce.domain.entity;
 
+import com.compass.reinan.api_ecommerce.domain.dto.security.UserLoginRequest;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.io.Serializable;
 import java.time.Instant;
@@ -46,5 +48,9 @@ public class User implements Serializable {
 
     public enum Role {
         ADMIN, CLIENT
+    }
+
+    public boolean isLoginCorrect(UserLoginRequest loginRequest, PasswordEncoder passwordEncoder) {
+        return passwordEncoder.matches(loginRequest.password(), this.password);
     }
 }
