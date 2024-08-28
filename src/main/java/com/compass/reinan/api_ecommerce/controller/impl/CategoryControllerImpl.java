@@ -26,7 +26,7 @@ public class CategoryControllerImpl implements CategoryController {
     }
 
     @Override
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<CategoryResponseDto> getCategoryById(@PathVariable Long id) {
         return ResponseEntity.ok().body(categoryService.findCategoryById(id));
     }
