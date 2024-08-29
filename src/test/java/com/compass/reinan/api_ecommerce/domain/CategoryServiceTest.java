@@ -39,14 +39,16 @@ public class CategoryServiceTest {
 
     @Test
     public void saveCategory_WithValidData_ShouldSaveAndReturnResponseDto() {
+        when(categoryRepository.existsByName(CATEGORY_REQUEST_DTO.name())).thenReturn(false);
         when(mapper.toEntity(CATEGORY_REQUEST_DTO)).thenReturn(CATEGORY);
-        when(mapper.toResponseDto(CATEGORY)).thenReturn(CATEGORY_RESPONSE_DTO);
         when(categoryRepository.save(CATEGORY)).thenReturn(CATEGORY);
+        when(mapper.toResponseDto(CATEGORY)).thenReturn(CATEGORY_RESPONSE_DTO);
 
         CategoryResponseDto actualResponseDto = categoryService.saveCategory(CATEGORY_REQUEST_DTO);
 
         assertThat(actualResponseDto).isEqualTo(CATEGORY_RESPONSE_DTO);
         verify(categoryRepository, times(1)).save(eq(CATEGORY));
+        verify(categoryRepository, times(1)).existsByName(eq(CATEGORY_REQUEST_DTO.name()));
     }
 
     @Test
@@ -75,13 +77,11 @@ public class CategoryServiceTest {
 
         assertThrows(EntityNotFoundException.class, () -> categoryService.findCategoryById(1L));
 
-
         verify(categoryRepository, times(1)).findById(1L);
     }
 
     @Test
-    public void testDeleteCategory_WhenCategoryExistsAndHasNoProducts_ShouldDeleteCategory() {
-
+    public void deleteCategory_WhenCategoryExistsAndHasNoProducts_ShouldDeleteCategory() {
         when(categoryRepository.findById(1L)).thenReturn(Optional.of(CATEGORY));
 
         categoryService.deleteCategory(1L);
@@ -90,14 +90,12 @@ public class CategoryServiceTest {
     }
 
     @Test
-    public void testDeleteCategory_WhenCategoryExistsAndHasProducts_ShouldInactiveCategory() {
+    public void deleteCategory_WhenCategoryExistsAndHasProducts_ShouldInactiveCategory() {
         when(categoryRepository.findById(1L)).thenReturn(Optional.of(CATEGORY_ACTIVE));
         when(categoryRepository.save(CATEGORY_ACTIVE)).thenReturn(CATEGORY_INACTIVE);
 
-        // Act
         categoryService.deleteCategory(1L);
 
-        // Assert
         verify(categoryRepository, never()).delete(CATEGORY_ACTIVE);
         verify(categoryRepository, times(1)).save(CATEGORY_ACTIVE);
     }
@@ -108,7 +106,7 @@ public class CategoryServiceTest {
 
         assertThrows(CategoryActiveException.class, () -> categoryService.deleteCategory(1L));
 
-        verify(categoryRepository, never()).save(any()); // No save call expected  //nao funciona
+        verify(categoryRepository, never()).save(any());
     }
 
     @Test
@@ -134,7 +132,7 @@ public class CategoryServiceTest {
     }
 
     @Test
-    public void modifyCategoryName_WithValidNewName_ShouldReturnUpdatedCategory() {
+    public void updateCategoryName_WithValidNewName_ShouldReturnUpdatedCategory() {
         String newCategoryName = "New Category Name";
         when(categoryRepository.findById(1L)).thenReturn(Optional.of(CATEGORY));
         when(categoryRepository.save(CATEGORY)).thenReturn(CATEGORY_NEW_NAME);

@@ -20,7 +20,7 @@ public class CategoryConstants {
 
 
     public static final Category CATEGORY_ACTIVE = new Category(1L, "Test Category", true , List.of(new Product(1L, "Test Product", 10, BigDecimal.valueOf(10.1), true, null, null)));
-    public static final Category CATEGORY_INACTIVE = new Category(1L, "Test Category", false, List.of(new Product(1L, "Test Product", 10, BigDecimal.valueOf(10.1), true, null, null)));
-    public static final Category CATEGORY_ALREADY_INACTIVE = new Category(1L, "Test Category", false, List.of(new Product(1L, "Test Product", 10, BigDecimal.valueOf(10.1), true, null, null)));
+    public static final Category CATEGORY_INACTIVE = new Category(1L, "Test Category", false, List.of(new Product(1L, "Test Product", 10, BigDecimal.valueOf(10.1), false, null, null)));
+    public static final Category CATEGORY_ALREADY_INACTIVE = new Category(1L, "Test Category", false, List.of(new Product(1L, "Test Product", 10, BigDecimal.valueOf(10.1), false, null, null)));
     public static final Category CATEGORY_ALREADY_ACTIVE = new Category(1L, "Test Category", true , List.of(new Product(1L, "Test Product", 10, BigDecimal.valueOf(10.1), true, null, null)));
 }
