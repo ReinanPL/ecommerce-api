@@ -28,7 +28,7 @@ public interface UserController {
                     @ApiResponse(responseCode = "422", description = "Resource not processed due to invalid input data",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
             })
-    ResponseEntity<UserResponse> saveUser(@RequestBody @Valid UserCreateRequest userRequest);
+    ResponseEntity<UserResponse> saveUser(UserCreateRequest userRequest);
 
     @Operation(summary = "Retrieve a user by CPF", description = "Retrieve a user by CPF",
             security = @SecurityRequirement(name = "security"),
@@ -38,7 +38,7 @@ public interface UserController {
                     @ApiResponse(responseCode = "404", description = "Resource not found",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
             })
-    ResponseEntity<UserResponse> getUserByCpf(@PathVariable String cpf);
+    ResponseEntity<UserResponse> getUserByCpf(String cpf);
 
     @Operation(summary = "Delete a user by CPF", description = "Delete a user by CPF",
             security = @SecurityRequirement(name = "security"),
@@ -47,7 +47,7 @@ public interface UserController {
                     @ApiResponse(responseCode = "404", description = "Resource not found",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
             })
-    ResponseEntity<Void> deleteUserByCpf(@PathVariable String cpf);
+    ResponseEntity<Void> deleteUserByCpf(String cpf);
 
     @Operation(summary = "Update a user email", description = "Modify a user email",
             security = @SecurityRequirement(name = "security"),
@@ -62,7 +62,7 @@ public interface UserController {
                             = "Resource not processed due to invalid input data", content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ErrorMessage.class))),
             })
-    ResponseEntity<UserResponse> updateUserEmail(@PathVariable String cpf, @RequestBody @Valid EmailUpdateRequest emailDto);
+    ResponseEntity<UserResponse> updateUserEmail(String cpf, EmailUpdateRequest emailDto);
 
     @Operation(summary = "Update a password", description = "Update client password.",
             security = @SecurityRequirement(name = "security"),
@@ -76,7 +76,7 @@ public interface UserController {
                     @ApiResponse(responseCode = "422", description = "invalid or bad formatted fields",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
             })
-    ResponseEntity<Void> setUserPassword(@PathVariable String cpf, @RequestBody @Valid UpdatePasswordRequest password);
+    ResponseEntity<Void> setUserPassword(String cpf, UpdatePasswordRequest password);
 
     @Operation(summary = "Update a user role", description = "Modify a user role",
             security = @SecurityRequirement(name = "security"),
@@ -92,7 +92,7 @@ public interface UserController {
                             schema = @Schema(implementation = ErrorMessage.class))),
             })
 
-    ResponseEntity<UserResponse> updateUserRole(@PathVariable String cpf, @RequestBody RoleUpdateRequest role);
+    ResponseEntity<UserResponse> updateUserRole(String cpf, RoleUpdateRequest role);
 
     @Operation(summary = "Update a user address", description = "Modify a user address",
             security = @SecurityRequirement(name = "security"),
