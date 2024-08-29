@@ -1,6 +1,7 @@
 package com.compass.reinan.api_ecommerce.domain.entity;
 
 import com.compass.reinan.api_ecommerce.domain.dto.security.UserLoginRequest;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -38,6 +39,7 @@ public class User implements Serializable {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "address_id")
     private Address address;
+    @JsonIgnore
     @OneToMany(mappedBy = "user")
     private List<Sale> sales = new ArrayList<>();
 

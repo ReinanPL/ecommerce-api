@@ -91,7 +91,7 @@ public class UserServiceImpl implements UserService {
                .orElseThrow(() -> new EntityNotFoundException(String.format("Cpf: '%s' not found ", cpf)));
         Optional.of(Objects.equals(user.getRole().toString(), role.toUpperCase()))
                 .filter(sameRole ->!sameRole)
-                .orElseThrow(() -> new PasswordInvalidException(String.format("The user already have this role: '%s'", role)));
+                .orElseThrow(() -> new DataUniqueViolationException(String.format("The user already have this role: '%s'", role)));
 
         user.setRole(User.Role.valueOf(role.toUpperCase()));
         return mapper.toResponse(userRepository.save(user));

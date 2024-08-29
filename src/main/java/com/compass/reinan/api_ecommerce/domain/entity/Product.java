@@ -1,5 +1,6 @@
 package com.compass.reinan.api_ecommerce.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -30,15 +31,16 @@ public class Product implements Serializable {
     private Integer quantityInStock;
     @Column(name = "price", nullable = false)
     private BigDecimal price;
-    private boolean active = true;
+    private Boolean active = true;
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "id.product", cascade = CascadeType.ALL)
     private Set<ItemSale> items = new HashSet<>();
 
-    private List<Sale> getSales(){
+    public List<Sale> getSales(){
         List<Sale> sales = new ArrayList<>();
         for(ItemSale x : items) {
             sales.add(x.getSale());

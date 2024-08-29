@@ -1,5 +1,6 @@
 package com.compass.reinan.api_ecommerce.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,6 +27,8 @@ public class Category implements Serializable {
     private String name;
     @Column(name = "active")
     private Boolean active = true;
+
+    @JsonIgnore
     @OneToMany(mappedBy = "category")
     private List<Product> products = new ArrayList<>();;
 

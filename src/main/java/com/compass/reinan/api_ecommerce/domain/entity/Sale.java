@@ -10,7 +10,6 @@ import lombok.Setter;
 
 import java.io.Serializable;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -29,11 +28,11 @@ public class Sale implements Serializable {
     private Long id;
     @Column(name = "date_sale")
     private Instant dateSale;
-    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_cpf")
     private User user;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "id.sale", cascade = CascadeType.ALL)
     private Set<ItemSale> items = new HashSet<>();
 

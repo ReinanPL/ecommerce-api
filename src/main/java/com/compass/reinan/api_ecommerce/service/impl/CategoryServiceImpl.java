@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -29,11 +28,10 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public CategoryResponseDto saveCategory(CategoryRequestDto categoryRequest){
-        try{
-            return mapper.toResponseDto(categoryRepository.save(mapper.toEntity(categoryRequest)));
-        } catch (RuntimeException e){
-            throw new DataUniqueViolationException(String.format("Category '%s' already exists", categoryRequest.name()));
-        }
+        Optional.of(categoryRepository.existsByName(categoryRequest.name()))
+                .filter(exists -> !exists)
+                .orElseThrow(() -> new DataUniqueViolationException(String.format("Category '%s' already exists", categoryRequest.name())));
+        return mapper.toResponseDto(categoryRepository.save(mapper.toEntity(categoryRequest)));
     }
 
     @Override
