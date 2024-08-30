@@ -4,7 +4,7 @@ import com.compass.reinan.api_ecommerce.domain.dto.product.ProductRequest;
 import com.compass.reinan.api_ecommerce.domain.dto.product.ProductResponse;
 import com.compass.reinan.api_ecommerce.domain.dto.product.UpdateProductRequest;
 import com.compass.reinan.api_ecommerce.domain.entity.Product;
-import com.compass.reinan.api_ecommerce.exception.CategoryActiveException;
+import com.compass.reinan.api_ecommerce.exception.EntityActiveStatusException;
 import com.compass.reinan.api_ecommerce.exception.DataUniqueViolationException;
 import com.compass.reinan.api_ecommerce.exception.EntityNotFoundException;
 import com.compass.reinan.api_ecommerce.repository.CategoryRepository;
@@ -81,7 +81,7 @@ public class ProductServiceImpl implements ProductService {
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Product with id: '%s' not found", id)));
         Optional.of(product.getActive())
                 .filter(active -> !active)
-                .orElseThrow(() -> new CategoryActiveException(String.format("Category Id: '%s' already active ", id)));
+                .orElseThrow(() -> new EntityActiveStatusException(String.format("Category Id: '%s' already active ", id)));
         product.setActive(true);
         return mapper.toResponse(productRepository.save(product));
     }
@@ -98,7 +98,7 @@ public class ProductServiceImpl implements ProductService {
     private void inactiveProduct(Product product) {
         Optional.of(product.getActive())
                 .filter(active -> active)
-                .orElseThrow(() -> new CategoryActiveException(String.format("Category Id: '%s' already inactive ", product.getId())));
+                .orElseThrow(() -> new EntityActiveStatusException(String.format("Category Id: '%s' already inactive ", product.getId())));
         product.setActive(false);
         productRepository.save(product);
     }

@@ -31,6 +31,7 @@ public class Product implements Serializable {
     private Integer quantityInStock;
     @Column(name = "price", nullable = false)
     private BigDecimal price;
+    @Column(name = "is_active")
     private Boolean active = true;
     @ManyToOne
     @JoinColumn(name = "category_id")
@@ -39,12 +40,4 @@ public class Product implements Serializable {
     @JsonIgnore
     @OneToMany(mappedBy = "id.product", cascade = CascadeType.ALL)
     private Set<ItemSale> items = new HashSet<>();
-
-    public List<Sale> getSales(){
-        List<Sale> sales = new ArrayList<>();
-        for(ItemSale x : items) {
-            sales.add(x.getSale());
-        }
-        return sales;
-    }
 }

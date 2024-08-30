@@ -30,42 +30,6 @@ public class ApiExceptionHandler {
                 .body(new ErrorMessage(request, HttpStatus.UNPROCESSABLE_ENTITY, "Invalid field", result));
     }
 
-    @ExceptionHandler({DataUniqueViolationException.class, CategoryActiveException.class})
-    public ResponseEntity<ErrorMessage> violationException(RuntimeException ex, HttpServletRequest request) {
-        log.error("Api Error - ", ex);
-        return ResponseEntity
-                .status(HttpStatus.CONFLICT)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(new ErrorMessage(request, HttpStatus.CONFLICT, ex.getMessage()));
-    }
-
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<ErrorMessage> entityNotFoundException(RuntimeException ex, HttpServletRequest request) {
-        log.error("Api Error - ", ex);
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(new ErrorMessage(request, HttpStatus.NOT_FOUND, ex.getMessage()));
-    }
-
-    @ExceptionHandler(PasswordInvalidException.class)
-    public ResponseEntity<ErrorMessage> passwordInvalidException(RuntimeException ex, HttpServletRequest request) {
-        log.error("Api Error - ", ex);
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(new ErrorMessage(request, HttpStatus.BAD_REQUEST, ex.getMessage()));
-    }
-
-    @ExceptionHandler(PasswordTokenViolationException.class)
-    public ResponseEntity<ErrorMessage> passwordTokenInvalidException(RuntimeException ex, HttpServletRequest request) {
-        log.error("Api Error - ", ex);
-        return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(new ErrorMessage(request, HttpStatus.UNAUTHORIZED, ex.getMessage()));
-    }
-
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorMessage> accessDeniedException(AccessDeniedException ex, HttpServletRequest request) {
         log.error("Api Error - ", ex);
@@ -75,12 +39,40 @@ public class ApiExceptionHandler {
                 .body(new ErrorMessage(request, HttpStatus.FORBIDDEN, ex.getMessage()));
     }
 
-    @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<ErrorMessage> badCredentialsException(BadCredentialsException ex, HttpServletRequest request) {
+    @ExceptionHandler({DataUniqueViolationException.class, EntityActiveStatusException.class})
+    public ResponseEntity<ErrorMessage> conflictException(RuntimeException ex, HttpServletRequest request) {
+        log.error("Api Error - ", ex);
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new ErrorMessage(request, HttpStatus.CONFLICT, ex.getMessage()));
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorMessage> notFoundException(RuntimeException ex, HttpServletRequest request) {
+        log.error("Api Error - ", ex);
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new ErrorMessage(request, HttpStatus.NOT_FOUND, ex.getMessage()));
+    }
+
+    @ExceptionHandler({PasswordInvalidException.class, InsufficientStockException.class, BadCredentialsException.class})
+    public ResponseEntity<ErrorMessage> badRequestException(RuntimeException ex, HttpServletRequest request) {
         log.error("Api Error - ", ex);
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new ErrorMessage(request, HttpStatus.BAD_REQUEST, ex.getMessage()));
     }
+
+    @ExceptionHandler(PasswordTokenViolationException.class)
+    public ResponseEntity<ErrorMessage> unauthorizedException(RuntimeException ex, HttpServletRequest request) {
+        log.error("Api Error - ", ex);
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new ErrorMessage(request, HttpStatus.UNAUTHORIZED, ex.getMessage()));
+    }
+
 }

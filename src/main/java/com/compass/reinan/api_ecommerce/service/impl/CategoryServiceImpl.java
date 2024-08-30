@@ -3,7 +3,7 @@ package com.compass.reinan.api_ecommerce.service.impl;
 import com.compass.reinan.api_ecommerce.domain.dto.category.CategoryRequestDto;
 import com.compass.reinan.api_ecommerce.domain.dto.category.CategoryResponseDto;
 import com.compass.reinan.api_ecommerce.domain.entity.Category;
-import com.compass.reinan.api_ecommerce.exception.CategoryActiveException;
+import com.compass.reinan.api_ecommerce.exception.EntityActiveStatusException;
 import com.compass.reinan.api_ecommerce.exception.DataUniqueViolationException;
 import com.compass.reinan.api_ecommerce.exception.EntityNotFoundException;
 import com.compass.reinan.api_ecommerce.repository.CategoryRepository;
@@ -62,7 +62,7 @@ public class CategoryServiceImpl implements CategoryService {
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Category Id: '%s' not found ", id)));
         Optional.of(category.getActive())
                 .filter(active -> !active)
-                .orElseThrow(() -> new CategoryActiveException(String.format("Category Id: '%s' is already active ", id)));
+                .orElseThrow(() -> new EntityActiveStatusException(String.format("Category Id: '%s' is already active ", id)));
         category.setActive(true);
         return mapper.toResponseDto(categoryRepository.save(category));
     }
@@ -91,7 +91,7 @@ public class CategoryServiceImpl implements CategoryService {
     private void inactiveCategory(Category category) {
         Optional.of(category.getActive())
                 .filter(active -> active)
-                .orElseThrow(() -> new CategoryActiveException(String.format("Category Id: '%s' is already inactive ", category.getId())));
+                .orElseThrow(() -> new EntityActiveStatusException(String.format("Category Id: '%s' is already inactive ", category.getId())));
         category.setActive(false);
         categoryRepository.save(category);
     }

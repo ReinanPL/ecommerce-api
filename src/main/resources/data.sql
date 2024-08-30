@@ -1,4 +1,4 @@
-INSERT INTO Categories (name, active)
+INSERT INTO Categories (name, is_active)
 VALUES ('Eletrônicos', TRUE),
 ('Vestuário', TRUE),
 ('Móveis', TRUE),
@@ -20,7 +20,7 @@ VALUES('63235354085', 'John', 'Doe', 'johndoe@example.com', '$2a$12$fHZNyhLWJAWs
 ('79816657015', 'Alice', 'Wonderland', 'aliceinwonderland@fairytales.com', '$2a$12$FQl6gdoJjNVPDfoP3hz/r.zNPT50BFe1X/dE8SwrG980kSGF6AWma', 'CLIENT',4);
 -- password: 123456
 
-INSERT INTO Products (name, quantity_in_stock, price, category_id, active)
+INSERT INTO Products (name, quantity_in_stock, price, category_id, is_active)
 VALUES ('Smartphone Galaxy Z Flip 4', 10, 5999.99, (SELECT id FROM Categories WHERE name = 'Eletrônicos'), TRUE),
 ('Camisa Polo Ralph Lauren', 20, 199.90, (SELECT id FROM Categories WHERE name = 'Vestuário'), TRUE),
 ('Sofá Retrátil', 5, 2999.99, (SELECT id FROM Categories WHERE name = 'Móveis'), TRUE),

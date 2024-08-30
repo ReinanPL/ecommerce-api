@@ -3,7 +3,7 @@ package com.compass.reinan.api_ecommerce.service.impl;
 import com.compass.reinan.api_ecommerce.domain.dto.user.request.AddressRequest;
 import com.compass.reinan.api_ecommerce.domain.dto.user.request.UserCreateRequest;
 import com.compass.reinan.api_ecommerce.domain.dto.user.response.UserResponse;
-import com.compass.reinan.api_ecommerce.domain.entity.User;
+import com.compass.reinan.api_ecommerce.domain.entity.enums.Role;
 import com.compass.reinan.api_ecommerce.exception.DataUniqueViolationException;
 import com.compass.reinan.api_ecommerce.exception.EntityNotFoundException;
 import com.compass.reinan.api_ecommerce.exception.PasswordInvalidException;
@@ -93,7 +93,7 @@ public class UserServiceImpl implements UserService {
                 .filter(sameRole ->!sameRole)
                 .orElseThrow(() -> new DataUniqueViolationException(String.format("The user already have this role: '%s'", role)));
 
-        user.setRole(User.Role.valueOf(role.toUpperCase()));
+        user.setRole(Role.valueOf(role.toUpperCase()));
         return mapper.toResponse(userRepository.save(user));
     }
 

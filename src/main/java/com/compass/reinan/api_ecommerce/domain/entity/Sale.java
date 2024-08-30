@@ -1,6 +1,7 @@
 package com.compass.reinan.api_ecommerce.domain.entity;
 
 
+import com.compass.reinan.api_ecommerce.domain.entity.enums.Status;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -31,16 +32,11 @@ public class Sale implements Serializable {
     @ManyToOne
     @JoinColumn(name = "user_cpf")
     private User user;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private Status status;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "id.sale", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "id.sale", cascade = CascadeType.ALL, orphanRemoval=true)
     private Set<ItemSale> items = new HashSet<>();
-
-    private List<Product> getProductsSales(){
-        List<Product> products = new ArrayList<>();
-        for(ItemSale x : items) {
-            products.add(x.getProduct());
-        }
-        return products;
-    }
 }

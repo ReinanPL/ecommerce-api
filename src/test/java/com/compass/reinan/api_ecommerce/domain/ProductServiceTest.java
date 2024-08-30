@@ -1,7 +1,7 @@
 package com.compass.reinan.api_ecommerce.domain;
 
 import com.compass.reinan.api_ecommerce.domain.dto.product.ProductResponse;
-import com.compass.reinan.api_ecommerce.exception.CategoryActiveException;
+import com.compass.reinan.api_ecommerce.exception.EntityActiveStatusException;
 import com.compass.reinan.api_ecommerce.exception.DataUniqueViolationException;
 import com.compass.reinan.api_ecommerce.exception.EntityNotFoundException;
 import com.compass.reinan.api_ecommerce.repository.CategoryRepository;
@@ -108,7 +108,7 @@ public class ProductServiceTest {
     public void inactiveProduct_WithProductAlreadyInactive_ShouldThrowCategoryActiveException() {
         when(productRepository.findById(1L)).thenReturn(Optional.of(PRODUCT_ALREADY_INACTIVE));
 
-        assertThrows(CategoryActiveException.class, () -> productService.deleteById(1L));
+        assertThrows(EntityActiveStatusException.class, () -> productService.deleteById(1L));
 
         verify(productRepository, never()).save(any());
     }
@@ -130,7 +130,7 @@ public class ProductServiceTest {
     public void activateProduct_WithAlreadyActiveProduct_ShouldThrowCategoryActiveException() {
         when(productRepository.findById(1L)).thenReturn(Optional.of(PRODUCT_ALREADY_ACTIVE));
 
-        assertThrows(CategoryActiveException.class, () -> productService.activeProduct(1L));
+        assertThrows(EntityActiveStatusException.class, () -> productService.activeProduct(1L));
 
         verify(productRepository, never()).save(any());
     }

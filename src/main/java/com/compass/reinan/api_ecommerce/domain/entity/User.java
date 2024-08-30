@@ -1,6 +1,7 @@
 package com.compass.reinan.api_ecommerce.domain.entity;
 
 import com.compass.reinan.api_ecommerce.domain.dto.security.UserLoginRequest;
+import com.compass.reinan.api_ecommerce.domain.entity.enums.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -36,7 +37,7 @@ public class User implements Serializable {
     @Column(name = "role", nullable = false, length = 7)
     @Enumerated(EnumType.STRING)
     private Role role = Role.CLIENT;
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval=true)
     @JoinColumn(name = "address_id")
     private Address address;
     @JsonIgnore
@@ -48,9 +49,6 @@ public class User implements Serializable {
     @Column(name = "token_expiration_date")
     private Instant tokenExpirationDate;
 
-    public enum Role {
-        ADMIN, CLIENT
-    }
 
     public boolean isLoginCorrect(UserLoginRequest loginRequest, PasswordEncoder passwordEncoder) {
         return passwordEncoder.matches(loginRequest.password(), this.password);

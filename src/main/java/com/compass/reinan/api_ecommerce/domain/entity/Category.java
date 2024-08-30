@@ -25,7 +25,7 @@ public class Category implements Serializable {
     private Long id;
     @Column(name = "name", unique = true, nullable = false, length =50)
     private String name;
-    @Column(name = "active")
+    @Column(name = "is_active")
     private Boolean active = true;
 
     @JsonIgnore

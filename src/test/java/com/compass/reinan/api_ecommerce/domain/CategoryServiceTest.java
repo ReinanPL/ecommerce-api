@@ -2,7 +2,7 @@ package com.compass.reinan.api_ecommerce.domain;
 
 import com.compass.reinan.api_ecommerce.domain.dto.category.CategoryResponseDto;
 
-import com.compass.reinan.api_ecommerce.exception.CategoryActiveException;
+import com.compass.reinan.api_ecommerce.exception.EntityActiveStatusException;
 import com.compass.reinan.api_ecommerce.exception.DataUniqueViolationException;
 import com.compass.reinan.api_ecommerce.exception.EntityNotFoundException;
 import com.compass.reinan.api_ecommerce.repository.CategoryRepository;
@@ -104,7 +104,7 @@ public class CategoryServiceTest {
     public void inactiveCategory_WithCategoryAlreadyInactive_ShouldThrowCategoryActiveException() {
         when(categoryRepository.findById(1L)).thenReturn(Optional.of(CATEGORY_ALREADY_INACTIVE));
 
-        assertThrows(CategoryActiveException.class, () -> categoryService.deleteCategory(1L));
+        assertThrows(EntityActiveStatusException.class, () -> categoryService.deleteCategory(1L));
 
         verify(categoryRepository, never()).save(any());
     }
@@ -126,7 +126,7 @@ public class CategoryServiceTest {
     public void activateCategory_WithAlreadyActiveCategory_ShouldThrowCategoryActiveException() {
         when(categoryRepository.findById(1L)).thenReturn(Optional.of(CATEGORY_ALREADY_ACTIVE));
 
-        assertThrows(CategoryActiveException.class, () -> categoryService.activeCategory(1L));
+        assertThrows(EntityActiveStatusException.class, () -> categoryService.activeCategory(1L));
 
         verify(categoryRepository, never()).save(any());
     }
