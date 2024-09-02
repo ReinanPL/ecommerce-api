@@ -7,7 +7,6 @@ import com.compass.reinan.api_ecommerce.exception.PasswordTokenViolationExceptio
 import com.compass.reinan.api_ecommerce.repository.UserRepository;
 import com.compass.reinan.api_ecommerce.service.UserRecoveryPasswordService;
 import com.compass.reinan.api_ecommerce.service.mapper.UserMapper;
-import com.compass.reinan.api_ecommerce.util.DataUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,7 +23,6 @@ public class UserRecoveryPasswordServiceImpl implements UserRecoveryPasswordServ
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper mapper;
-    private final DataUtils dataUtils;
 
     @Override
     @Transactional
@@ -36,9 +34,8 @@ public class UserRecoveryPasswordServiceImpl implements UserRecoveryPasswordServ
         user.setResetPasswordToken(token);
         var tokenInstant = Instant.now().plusSeconds(1600);
         user.setTokenExpirationDate(tokenInstant);
-        var formattedTokenInstant = dataUtils.formatToISO8601(tokenInstant);
         userRepository.save(user);
-        return mapper.toResponsePassword(token, formattedTokenInstant);
+        return mapper.toResponsePassword(token, tokenInstant);
     }
 
     @Override

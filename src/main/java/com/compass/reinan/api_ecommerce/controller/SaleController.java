@@ -6,8 +6,10 @@ import com.compass.reinan.api_ecommerce.domain.dto.sale.UpdateItemSale;
 import com.compass.reinan.api_ecommerce.domain.dto.sale.UpdatePatchItemSale;
 import com.compass.reinan.api_ecommerce.exception.ErrorMessage;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -17,80 +19,241 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
-@Tag(name = "Sale", description = "Contains all operations related to resources for registering, deleting, editing and reading a Sale.")
+@Tag(name = "Sale", description = "Operations related to managing sales, including registration, deletion, updates, and retrieval.")
 public interface SaleController {
 
-    @Operation(summary = "Create a new sale", description = "Resource for creating a new sale, only CLIENT(linked with the user_cpf of the new Sale) and ADMIN can create a sale",
+    @Operation(
+            summary = "Create a new sale",
+            description = "Registers a new sale in the system. Only users with CLIENT or ADMIN roles can create a sale.",
             security = @SecurityRequirement(name = "security"),
             responses = {
-                    @ApiResponse(responseCode = "201", description = "Resource created with success",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = SaleResponse.class))),
-                    @ApiResponse(responseCode = "409", description = "Product name already registered in the system",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
-                    @ApiResponse(responseCode = "422", description = "Resource not processed due to invalid input data",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
-            })
-    ResponseEntity<SaleResponse> saveSale(SaleRequest saleRequest);
+                    @ApiResponse(
+                            responseCode = "201",
+                            description = "Sale created successfully.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = SaleResponse.class),
+                                    examples = @ExampleObject(value = "[{\"id\":1,\"dateSale\":\"2024-09-01T00:00:00Z\",\"userCpf\":\"12345678900\",\"status\":\"PROCESSING\",\"items\":[{\"productId\":1,\"quantity\":2,\"price\":50.00}],\"totalValue\":100.00}]")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "409",
+                            description = "Conflict due to the sale with the given details already existing.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Sale with these details already exists.\"}")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "422",
+                            description = "Unprocessable entity due to invalid input data.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Invalid input data provided.\"}")
+                            )
+                    )
+            }
+    )
+    ResponseEntity<SaleResponse> saveSale(
+            @Parameter(description = "Details of the sale to be created.", required = true)
+            SaleRequest saleRequest
+    );
 
-    @Operation(summary = "Retrieve a sale by id", description = "Retrieve a sale by id, only the client who owns the sale or an admin can retrieve a sale by id",
+    @Operation(
+            summary = "Retrieve a sale by ID",
+            description = "Fetches a sale record by its ID. Accessible only to the client who owns the sale or an admin.",
             security = @SecurityRequirement(name = "security"),
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Resource retrieved successfully",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = SaleResponse.class))),
-                    @ApiResponse(responseCode = "404", description = "Resource not found",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
-            })
-    ResponseEntity<SaleResponse> findSaleById(Long id);
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Sale retrieved successfully.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = SaleResponse.class),
+                                    examples = @ExampleObject(value = "[{\"id\":1,\"dateSale\":\"2024-09-01T00:00:00Z\",\"userCpf\":\"12345678900\",\"status\":\"PROCESSING\",\"items\":[{\"productId\":1,\"quantity\":2,\"price\":50.00}],\"totalValue\":100.00}]")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Sale with the specified ID not found.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Sale not found.\"}")
+                            )
+                    )
+            }
+    )
+    ResponseEntity<SaleResponse> findSaleById(
+            @Parameter(description = "ID of the sale to retrieve.", required = true)
+            @PathVariable Long id
+    );
 
-    @Operation(summary = "Delete a sale by id", description = "Delete sale by id, only the ADMIN can delete the sale",
+    @Operation(
+            summary = "Delete a sale by ID",
+            description = "Deletes a sale record by its ID. Accessible only to admins.",
             security = @SecurityRequirement(name = "security"),
             responses = {
-                    @ApiResponse(responseCode = "204", description = "Resource deleted successfully"),
-                    @ApiResponse(responseCode = "404", description = "Resource not found",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
-            })
-    ResponseEntity<Void> deleteSaleById(Long id);
+                    @ApiResponse(
+                            responseCode = "204",
+                            description = "Sale deleted successfully."
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Sale with the specified ID not found.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Sale not found.\"}")
+                            )
+                    )
+            }
+    )
+    ResponseEntity<Void> deleteSaleById(
+            @Parameter(description = "ID of the sale to delete.", required = true)
+            @PathVariable Long id
+    );
 
-    @Operation(summary = "Cancel a sale by id", description = "Cancel a sale by id, only the client who owns the sale or an admin can cancel the sale status",
+    @Operation(
+            summary = "Cancel a sale by ID",
+            description = "Cancels a sale by its ID. Accessible to the client who owns the sale or an admin.",
             security = @SecurityRequirement(name = "security"),
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Resource activated successfully",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = SaleResponse.class))),
-                    @ApiResponse(responseCode = "404", description = "Resource not found",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
-                    @ApiResponse(responseCode = "409", description = "Product is already active",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
-            })
-    ResponseEntity<SaleResponse> cancelSale(@PathVariable Long id);
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Sale status updated to 'CANCELLED' successfully.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = SaleResponse.class),
+                                    examples = @ExampleObject(value = "[{\"id\":1,\"dateSale\":\"2024-09-01T00:00:00Z\",\"userCpf\":\"12345678900\",\"status\":\"CANCELLED\",\"items\":[{\"productId\":1,\"quantity\":2,\"price\":50.00}],\"totalValue\":100.00}]")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Sale with the specified ID not found.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Sale not found.\"}")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "409",
+                            description = "Sale is already cancelled.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Sale is already cancelled.\"}")
+                            )
+                    )
+            }
+    )
+    ResponseEntity<SaleResponse> cancelSale(
+            @Parameter(description = "ID of the sale to cancel.", required = true)
+            @PathVariable Long id
+    );
 
-    @Operation(summary = "Update an item to a sale", description = "Update an itemList from a sale by id, only the CLIENT linked to the sale or the ADMIN can add the item",
+    @Operation(
+            summary = "Update an item in a sale",
+            description = "Updates the items in a sale. Only the client associated with the sale or an admin can add or modify items.",
             security = @SecurityRequirement(name = "security"),
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Resource updated successfully",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = SaleResponse.class))),
-                    @ApiResponse(responseCode = "404", description = "Resource not found",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
-                    @ApiResponse(responseCode = "422", description = "Resource not processed due to invalid input data",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Sale updated successfully.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = SaleResponse.class),
+                                    examples = @ExampleObject(value = "[{\"id\":1,\"dateSale\":\"2024-09-01T00:00:00Z\",\"userCpf\":\"12345678900\",\"status\":\"PROCESSING\",\"items\":[{\"productId\":2,\"quantity\":5,\"price\":50.00}],\"totalValue\":100.00}]")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Sale with the specified ID not found.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Sale not found.\"}")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "422",
+                            description = "Invalid input data provided.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Invalid data provided.\"}")
+                            )
+                    )
+            }
+    )
+    ResponseEntity<SaleResponse> updateSale(
+            @Parameter(description = "ID of the sale to update.", required = true)
+            @PathVariable Long id,
+            @Parameter(description = "Request object containing updated item details.", required = true)
+            UpdateItemSale itemSaleRequest
+    );
 
-            })
-    ResponseEntity<SaleResponse> updateSale(Long id, UpdateItemSale itemSaleRequest);
-
-    @Operation(summary = "Patch an item to a sale", description = "Patch itemList from a sale by id, the user can add, remove or modify the items, only the CLIENT linked to the sale or the ADMIN can remove the item",
+    @Operation(
+            summary = "Patch items in a sale",
+            description = "Patches the items in a sale by adding, removing, or modifying them. Accessible only to the client associated with the sale or an admin.",
             security = @SecurityRequirement(name = "security"),
             responses = {
-                    @ApiResponse(responseCode = "200", description = "Resource patched successfully",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = SaleResponse.class))),
-                    @ApiResponse(responseCode = "404", description = "Resource not found",
-                            content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
-            })
-    ResponseEntity<SaleResponse> patchSale(Long idSale, UpdatePatchItemSale patchItemSale);
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Sale items updated successfully.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = SaleResponse.class),
+                                    examples = @ExampleObject(value = "[{\"id\":1,\"dateSale\":\"2024-09-01T00:00:00Z\",\"userCpf\":\"12345678900\",\"status\":\"PROCESSING\",\"items\":[{\"productId\":1,\"quantity\":2,\"price\":50.00}],\"totalValue\":100.00}]")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Sale with the specified ID not found.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Sale not found.\"}")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "422",
+                            description = "Invalid input data provided.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Invalid data provided.\"}")
+                            )
+                    )
+            }
+    )
+    ResponseEntity<SaleResponse> patchSale(
+            @Parameter(description = "ID of the sale to patch.", required = true)
+            @PathVariable Long idSale,
+            @Parameter(description = "Request object containing item modifications.", required = true)
+            UpdatePatchItemSale patchItemSale
+    );
 
-    @Operation(summary = "List all sales", description = "List all registered sales, only ADMIN can retrieve this resource",
+    @Operation(
+            summary = "List all sales",
+            description = "Retrieves a list of all sales. Accessible only to admins.",
             security = @SecurityRequirement(name = "security"),
             responses = {
-                    @ApiResponse(responseCode = "200", description = "List of all registered sales", content = @Content(mediaType = "application/json",
-                            array = @ArraySchema(schema = @Schema(implementation = SaleResponse.class))))
-            })
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "List of all sales retrieved successfully.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples = @ExampleObject(value = "[{\"id\":1,\"dateSale\":\"2024-09-01T00:00:00Z\",\"userCpf\":\"12345678900\",\"status\":\"PROCESSING\",\"items\":[{\"productId\":1,\"quantity\":2,\"price\":50.00}],\"totalValue\":100.00}, {\"id\":1,\"dateSale\":\"2024-09-01T00:00:00Z\",\"userCpf\":\"12345678900\",\"status\":\"PROCESSING\",\"items\":[{\"productId\":3,\"quantity\":5,\"price\":50.00}],\"totalValue\":250.00}]"),
+                                    array = @ArraySchema(
+                                            schema = @Schema(implementation = SaleResponse.class)
+                                    )
+                            )
+                    )
+            }
+    )
     ResponseEntity<List<SaleResponse>> findAllSales();
 }

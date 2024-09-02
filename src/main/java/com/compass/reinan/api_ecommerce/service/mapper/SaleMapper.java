@@ -1,16 +1,15 @@
 package com.compass.reinan.api_ecommerce.service.mapper;
 
-import com.compass.reinan.api_ecommerce.domain.dto.sale.ItemSaleRequest;
 import com.compass.reinan.api_ecommerce.domain.dto.sale.ItemSaleResponse;
 import com.compass.reinan.api_ecommerce.domain.dto.sale.SaleRequest;
 import com.compass.reinan.api_ecommerce.domain.dto.sale.SaleResponse;
-
 import com.compass.reinan.api_ecommerce.domain.entity.Sale;
-
+import com.compass.reinan.api_ecommerce.util.DateUtils;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.List;
 
 @Mapper(componentModel = "spring", uses = SaleItemMapper.class)
@@ -31,6 +30,9 @@ public interface SaleMapper {
                 .map(item -> item.price().multiply(BigDecimal.valueOf(item.quantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
+    }
+    default String formatInstantToISO8601(Instant instant) {
+        return DateUtils.formatToISO8601(instant);
     }
 }
 
