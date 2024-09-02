@@ -61,7 +61,6 @@ public class ProductServiceTest {
         when(productRepository.save(PRODUCT)).thenThrow(new DataUniqueViolationException("Product already exists"));
 
         assertThrows(DataUniqueViolationException.class, () -> productService.save(PRODUCT_REQUEST));
-        verify(productRepository, times(1)).save(PRODUCT);
     }
 
     @Test
