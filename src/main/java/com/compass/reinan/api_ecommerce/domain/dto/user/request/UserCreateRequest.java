@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Size;
 import org.hibernate.validator.constraints.br.CPF;
 
 public record UserCreateRequest(
+        @NotBlank
         @Size(min = 11, max = 11, message = "User cpf must be 11 characters")
         @CPF(message = "Invalid cpf")
         String cpf,
