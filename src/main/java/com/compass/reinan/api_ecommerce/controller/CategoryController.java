@@ -18,7 +18,7 @@ import java.util.List;
 @Tag(name = "Category", description = "Contains all operations related to resources for registering, deleting, editing and reading a Category.")
 public interface CategoryController {
 
-    @Operation(summary = "Create a new user", description = "Resource for creating a new user",
+    @Operation(summary = "Create a new category", description = "Resource for creating a new category",
             security = @SecurityRequirement(name = "security"),
             responses = {
                     @ApiResponse(responseCode = "201", description = "Resource created with success",

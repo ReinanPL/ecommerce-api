@@ -12,13 +12,16 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
+@Tag(name = "Product", description = "Contains all operations related to resources for registering, deleting, editing and reading a Product.")
 public interface ProductController {
 
     @Operation(summary = "Create a new product", description = "Resource for creating a new product",
+            security = @SecurityRequirement(name = "security"),
             responses = {
                     @ApiResponse(responseCode = "201", description = "Resource created with success",
                             content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponse.class))),
