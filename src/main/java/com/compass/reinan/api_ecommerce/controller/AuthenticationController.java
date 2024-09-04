@@ -1,5 +1,6 @@
 package com.compass.reinan.api_ecommerce.controller;
 
+import com.compass.reinan.api_ecommerce.domain.dto.category.CategoryRequestDto;
 import com.compass.reinan.api_ecommerce.domain.dto.security.UserLoginRequest;
 import com.compass.reinan.api_ecommerce.domain.dto.security.UserTokenResponse;
 import com.compass.reinan.api_ecommerce.exception.ErrorMessage;
@@ -8,6 +9,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,14 @@ public interface AuthenticationController {
     @Operation(
             summary = "Authenticate a user",
             description = "Authenticates an existing user by validating their credentials and generates a JWT token for successful authentication. The token can be used to access protected resources.",
+            requestBody = @RequestBody(
+                    description = "Request body authenticate a user.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = UserLoginRequest.class),
+                            examples = @ExampleObject(value = "{ \"cpf\": \"12345678900\", \"password\": \"yourStrongPassword\" }")
+                    )
+            ),
             responses = {
                     @ApiResponse(
                             responseCode = "200",
@@ -48,8 +58,5 @@ public interface AuthenticationController {
                     )
             }
     )
-    ResponseEntity<UserTokenResponse> authenticationUser(
-            @Parameter(description = "Login credentials for user authentication. Must include username and password.", required = true)
-            UserLoginRequest loginRequest
-    );
+    ResponseEntity<UserTokenResponse> authenticationUser(UserLoginRequest loginRequest);
 }

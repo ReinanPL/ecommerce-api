@@ -1,5 +1,6 @@
 package com.compass.reinan.api_ecommerce.service.impl;
 
+import com.compass.reinan.api_ecommerce.domain.dto.page.PageableResponse;
 import com.compass.reinan.api_ecommerce.domain.dto.product.ProductRequest;
 import com.compass.reinan.api_ecommerce.domain.dto.product.ProductResponse;
 import com.compass.reinan.api_ecommerce.domain.dto.product.UpdateProductRequest;
@@ -10,16 +11,21 @@ import com.compass.reinan.api_ecommerce.exception.EntityNotFoundException;
 import com.compass.reinan.api_ecommerce.repository.CategoryRepository;
 import com.compass.reinan.api_ecommerce.repository.ProductRepository;
 import com.compass.reinan.api_ecommerce.service.ProductService;
+import com.compass.reinan.api_ecommerce.service.mapper.PageableMapper;
 import com.compass.reinan.api_ecommerce.service.mapper.ProductMapper;
 import io.micrometer.common.util.StringUtils;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Service
@@ -27,9 +33,11 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final ProductMapper mapper;
+    private final PageableMapper pageableMapper;
 
     @Override
     @Transactional
+    @CacheEvict(value = "products", key = "#id", allEntries = true)
     public ProductResponse save(ProductRequest productRequest) {
         Optional.of(productRepository.existsByName(productRequest.name()))
                 .filter(exists -> !exists)
@@ -47,6 +55,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "products", key = "#id", allEntries = true)
     public void deleteById(Long id) {
         var product = productRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Product with id: '%s' not found", id)));
@@ -59,6 +68,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
+    @CachePut(value = "products", key = "#id")
     public ProductResponse update(Long id, UpdateProductRequest productRequest) {
         var product = productRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Product with id: '%s' not found", id)));
@@ -76,6 +86,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
+    @CachePut(value = "products", key = "#id")
     public ProductResponse activeProduct(Long id) {
         var product = productRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Product with id: '%s' not found", id)));
@@ -88,11 +99,17 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ProductResponse> findAll() {
-        return productRepository.findAll()
-                .stream()
-                .map(mapper::toResponse)
-                .collect(Collectors.toList());
+    @Cacheable("products")
+    public PageableResponse<ProductResponse> findAll(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return pageableMapper.toProductResponse(productRepository.findAllProducts(pageable));
+    }
+
+    @Transactional(readOnly = true)
+    @Cacheable("products")
+    public PageableResponse<ProductResponse> findAllProductActives(Long categoryId, int page, int size, BigDecimal min, BigDecimal max) {
+        Pageable pageable = PageRequest.of(page, size);
+        return pageableMapper.toProductResponse(productRepository.findProductsActiveByFilters(categoryId, min, max, pageable));
     }
 
     private void inactiveProduct(Product product) {

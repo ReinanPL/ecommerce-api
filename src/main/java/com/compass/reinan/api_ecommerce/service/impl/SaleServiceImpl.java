@@ -1,5 +1,6 @@
 package com.compass.reinan.api_ecommerce.service.impl;
 
+import com.compass.reinan.api_ecommerce.domain.dto.page.PageableResponse;
 import com.compass.reinan.api_ecommerce.domain.dto.sale.*;
 import com.compass.reinan.api_ecommerce.domain.entity.*;
 import com.compass.reinan.api_ecommerce.domain.entity.enums.Status;
@@ -10,9 +11,15 @@ import com.compass.reinan.api_ecommerce.repository.ProductRepository;
 import com.compass.reinan.api_ecommerce.repository.SaleRepository;
 import com.compass.reinan.api_ecommerce.repository.UserRepository;
 import com.compass.reinan.api_ecommerce.service.SaleService;
+import com.compass.reinan.api_ecommerce.service.mapper.PageableMapper;
 import com.compass.reinan.api_ecommerce.service.mapper.SaleMapper;
 import com.compass.reinan.api_ecommerce.util.EntityUtils;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -30,9 +37,11 @@ public class SaleServiceImpl implements SaleService {
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
     private final SaleMapper saleMapper;
+    private final PageableMapper pageableMapper;
 
     @Override
     @Transactional
+    @CacheEvict(value = "sales", key = "#id", allEntries = true)
     public SaleResponse save(SaleRequest saleRequest) {
         var user = EntityUtils.getEntityOrThrow(saleRequest.user_cpf(), User.class, userRepository);
 
@@ -60,6 +69,7 @@ public class SaleServiceImpl implements SaleService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "sales", key = "#id", allEntries = true)
     public void deleteById(Long id) {
         var sale = EntityUtils.getEntityOrThrow(id, Sale.class, saleRepository);
 
@@ -74,6 +84,7 @@ public class SaleServiceImpl implements SaleService {
 
     @Override
     @Transactional
+    @CachePut(value = "sales", key = "#id")
     public SaleResponse cancelSale(Long id) {
         var sale = EntityUtils.getEntityOrThrow(id, Sale.class, saleRepository);
 
@@ -87,6 +98,7 @@ public class SaleServiceImpl implements SaleService {
 
     @Override
     @Transactional
+    @CachePut(value = "sales", key = "#id")
     public SaleResponse updateSale(Long id, UpdateItemSale updateSaleRequest) {
         var sale = EntityUtils.getEntityOrThrow(id, Sale.class, saleRepository);
 
@@ -101,6 +113,7 @@ public class SaleServiceImpl implements SaleService {
 
     @Override
     @Transactional
+    @CachePut(value = "sales", key = "#id")
     public SaleResponse patchSale(Long id, UpdatePatchItemSale patchSaleRequest) {
         var sale = EntityUtils.getEntityOrThrow(id, Sale.class, saleRepository);
 
@@ -114,12 +127,11 @@ public class SaleServiceImpl implements SaleService {
     }
 
     @Override
+    @Cacheable("sales")
     @Transactional(readOnly = true)
-    public List<SaleResponse> findAll() {
-        return saleRepository.findAll()
-                .stream()
-                .map(saleMapper::toResponse)
-                .collect(Collectors.toList());
+    public PageableResponse<SaleResponse> findAll(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return pageableMapper.toSaleResponse(saleRepository.findAllSales(pageable));
     }
 
     private List<ItemSaleRequest> aggregateItems(List<ItemSaleRequest> items) {

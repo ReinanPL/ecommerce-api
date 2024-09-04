@@ -1,10 +1,10 @@
 package com.compass.reinan.api_ecommerce.controller.impl;
 
 import com.compass.reinan.api_ecommerce.controller.ProductController;
+import com.compass.reinan.api_ecommerce.domain.dto.page.PageableResponse;
 import com.compass.reinan.api_ecommerce.domain.dto.product.ProductRequest;
 import com.compass.reinan.api_ecommerce.domain.dto.product.ProductResponse;
 import com.compass.reinan.api_ecommerce.domain.dto.product.UpdateProductRequest;
-import com.compass.reinan.api_ecommerce.domain.entity.Sale;
 import com.compass.reinan.api_ecommerce.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.math.BigDecimal;
 
 @AllArgsConstructor
 @RestController
@@ -59,9 +59,22 @@ public class ProductControllerImpl implements ProductController {
     }
 
     @Override
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
+    @GetMapping("/admin")
+    public ResponseEntity<PageableResponse<ProductResponse>> findAllProducts(@RequestParam(defaultValue = "0") int page,
+                                                                             @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok().body(productService.findAll(page, size));
+    }
+
+    @Override
     @PreAuthorize("hasAuthority('SCOPE_ADMIN') or hasAuthority('SCOPE_CLIENT')")
     @GetMapping
-    public ResponseEntity<List<ProductResponse>> findAllProducts() {
-        return ResponseEntity.ok().body(productService.findAll());
+    public ResponseEntity<PageableResponse<ProductResponse>> findAllProductsActives(@RequestParam(required = false) Long categoryId,
+                                                                                      @RequestParam(required = false) BigDecimal minPrice,
+                                                                                      @RequestParam(required = false) BigDecimal maxPrice,
+                                                                                      @RequestParam(defaultValue = "0") int page,
+                                                                                      @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok().body(productService.findAllProductActives(categoryId, page, size, minPrice, maxPrice));
+
     }
 }

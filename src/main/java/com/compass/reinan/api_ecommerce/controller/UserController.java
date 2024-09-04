@@ -9,10 +9,10 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 
 
@@ -24,6 +24,14 @@ public interface UserController {
     @Operation(
             summary = "Create a new user",
             description = "Registers a new user in the system. Requires valid user details.",
+            requestBody = @RequestBody(
+                    description = "Request body for a new user.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = EmailUpdateRequest.class),
+                            examples = @ExampleObject(value = "{ \"cpf\": \"12345678900\", \"firstName\": \"John\", \"lastName\": \"Doe\", \"email\": \"john.doe@example.com\", \"password\": \"yourStrongPassword\", \"confirmPassword\": \"yourStrongPassword\", \"address\": { \"cep\": \"01234567\", \"city\": \"São Paulo\", \"state\": \"SP\", \"street\": \"Rua das Flores\", \"number\": \"123\", \"complement\": \"Apartamento 101\" } }")
+                    )
+            ),
             responses = {
                     @ApiResponse(
                             responseCode = "201",
@@ -54,16 +62,15 @@ public interface UserController {
                     )
             }
     )
-    ResponseEntity<UserResponse> saveUser(
-            @Parameter(description = "Details of the user to be created.", required = true)
-            @Valid
-            UserCreateRequest userRequest
-    );
+    ResponseEntity<UserResponse> saveUser(UserCreateRequest userRequest);
 
     @Operation(
             summary = "Retrieve a user by CPF",
             description = "Fetches user details based on the provided CPF.",
             security = @SecurityRequirement(name = "security"),
+            parameters = {
+                    @Parameter(name = "cpf", description = "The CPF of the user to retrieve.", required = true)
+            },
             responses = {
                     @ApiResponse(
                             responseCode = "200",
@@ -94,6 +101,9 @@ public interface UserController {
             summary = "Delete a user by CPF",
             description = "Deletes a user based on the provided CPF.",
             security = @SecurityRequirement(name = "security"),
+            parameters = {
+                    @Parameter(name = "cpf", description = "The CPF of the user to delete.", required = true)
+            },
             responses = {
                     @ApiResponse(
                             responseCode = "204",
@@ -110,15 +120,23 @@ public interface UserController {
                     )
             }
     )
-    ResponseEntity<Void> deleteUserByCpf(
-            @Parameter(description = "The CPF of the user to delete.", required = true)
-            String cpf
-    );
+    ResponseEntity<Void> deleteUserByCpf(String cpf);
 
     @Operation(
             summary = "Update a user email",
             description = "Updates the email address of a user identified by CPF.",
             security = @SecurityRequirement(name = "security"),
+            parameters = {
+                    @Parameter(name = "cpf", description = "The CPF of the user whose email is to be updated.", required = true)
+            },
+            requestBody = @RequestBody(
+                    description = "Request body for a email to the user.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = EmailUpdateRequest.class),
+                            examples = @ExampleObject(value = "{ \"newEmail\": \"juan@gmail.com\"}")
+                    )
+            ),
             responses = {
                     @ApiResponse(
                             responseCode = "200",
@@ -158,18 +176,23 @@ public interface UserController {
                     )
             }
     )
-    ResponseEntity<UserResponse> updateUserEmail(
-            @Parameter(description = "The CPF of the user whose email is to be updated.", required = true)
-            String cpf,
-            @Parameter(description = "Request object containing the new email address.", required = true)
-            @Valid
-            EmailUpdateRequest emailDto
-    );
+    ResponseEntity<UserResponse> updateUserEmail(String cpf, EmailUpdateRequest emailDto);
 
     @Operation(
             summary = "Update a user password",
             description = "Updates the password for a user identified by CPF.",
             security = @SecurityRequirement(name = "security"),
+            parameters = {
+                    @Parameter(name = "cpf", description = "The CPF of the user whose password is to be updated.", required = true)
+            },
+            requestBody = @RequestBody(
+                    description = "Request body for a new password for the user.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = UpdatePasswordRequest.class),
+                            examples = @ExampleObject(value = "{ \"oldPassword\": \"yourOldPassword\", \"newPassword\": \"yourNewPassword\", \"confirmPassword\": \"yourNewPassword\" }")
+                    )
+            ),
             responses = {
                     @ApiResponse(
                             responseCode = "204",
@@ -204,18 +227,23 @@ public interface UserController {
                     )
             }
     )
-    ResponseEntity<Void> setUserPassword(
-            @Parameter(description = "The CPF of the user whose password is to be updated.", required = true)
-            String cpf,
-            @Parameter(description = "Request object containing the new password and confirmation.", required = true)
-            @Valid
-            UpdatePasswordRequest password
-    );
+    ResponseEntity<Void> setUserPassword(String cpf, UpdatePasswordRequest password);
 
     @Operation(
             summary = "Update a user role",
             description = "Updates the role of a user identified by CPF.",
             security = @SecurityRequirement(name = "security"),
+            parameters = {
+                    @Parameter(name = "cpf", description = "The CPF of the user whose role is to be updated.", required = true)
+            },
+            requestBody = @RequestBody(
+                    description = "Request body for update the user role.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = RoleUpdateRequest.class),
+                            examples = @ExampleObject(value = "{ \"role\": \"ADMIN\" }")
+                    )
+            ),
             responses = {
                     @ApiResponse(
                             responseCode = "200",
@@ -255,18 +283,23 @@ public interface UserController {
                     )
             }
     )
-    ResponseEntity<UserResponse> updateUserRole(
-            @Parameter(description = "The CPF of the user whose role is to be updated.", required = true)
-            String cpf,
-            @Parameter(description = "Request object containing the new role.", required = true)
-            @Valid
-            RoleUpdateRequest role
-    );
+    ResponseEntity<UserResponse> updateUserRole(String cpf, RoleUpdateRequest role);
 
     @Operation(
             summary = "Update a user address",
             description = "Updates the address of a user identified by CPF.",
             security = @SecurityRequirement(name = "security"),
+            parameters = {
+                    @Parameter(name = "cpf", description = "The CPF of the user whose address is to be updated.", required = true)
+            },
+            requestBody = @RequestBody(
+                    description = "Request body for new address to the user.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = AddressRequest.class),
+                            examples = @ExampleObject(value = "{ \"cep\": \"01234567\", \"city\": \"São Paulo\", \"state\": \"SP\", \"street\": \"Rua das Flores\", \"number\": \"123\", \"complement\": \"Apartamento 101\" }")
+                    )
+            ),
             responses = {
                     @ApiResponse(
                             responseCode = "200",
@@ -297,13 +330,7 @@ public interface UserController {
                     )
             }
     )
-    ResponseEntity<UserResponse> updateUserAddress(
-            @Parameter(description = "The CPF of the user whose address is to be updated.", required = true)
-            String cpf,
-            @Parameter(description = "Request object containing the new address details.", required = true)
-            @Valid
-            AddressRequest addressDto
-    );
+    ResponseEntity<UserResponse> updateUserAddress(String cpf, AddressRequest addressDto);
 
     @Operation(
             summary = "List all users",

@@ -30,5 +30,18 @@ services:
       MYSQL_ROOT_PASSWORD: '${MYSQL_ROOT_PASSWORD}'
       MYSQL_USER: '${MYSQL_USER}'
       MYSQL_PASSWORD: '${MYSQL_PASSWORD}'
+
+  redis:
+    image: redis:7.4-alpine
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    environment:
+      - REDIS_PASSWORD=password
+    volumes:
+      - cache:/data
+
 volumes:
   db-data:
+  cache:

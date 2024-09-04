@@ -38,11 +38,7 @@ public interface SalesReportController {
                     )
             }
     )
-    ResponseEntity<List<SaleResponse>> getSalesByMonth(
-            @Parameter(description = "The CPF of the user whose sales are being retrieved.") String cpf,
-            @Parameter(description = "The month for which sales are being retrieved.") int month,
-            @Parameter(description = "The year for which sales are being retrieved.") int year
-    );
+    ResponseEntity<List<SaleResponse>> getSalesByMonth(String cpf, int month, int year);
 
     @Operation(
             summary = "Retrieve sales by user for the current week",
@@ -63,9 +59,7 @@ public interface SalesReportController {
                     )
             }
     )
-    ResponseEntity<List<SaleResponse>> getSalesByCurrentWeek(
-            @Parameter(description = "The CPF of the user whose sales are being retrieved.") String cpf
-    );
+    ResponseEntity<List<SaleResponse>> getSalesByCurrentWeek(String cpf);
 
     @Operation(
             summary = "Retrieve sales by user for a specific date",
@@ -89,10 +83,5 @@ public interface SalesReportController {
                     )
             }
     )
-    ResponseEntity<List<SaleResponse>> getSalesByDate(
-            @Parameter(description = "The CPF of the user whose sales are being retrieved.") String cpf,
-            @Parameter(description = "The day of the month for which sales are being retrieved.") int day,
-            @Parameter(description = "The month for which sales are being retrieved.") int month,
-            @Parameter(description = "The year for which sales are being retrieved.") int year
-    );
+    ResponseEntity<List<SaleResponse>> getSalesByDate( String cpf, int day, int month, int year);
 }

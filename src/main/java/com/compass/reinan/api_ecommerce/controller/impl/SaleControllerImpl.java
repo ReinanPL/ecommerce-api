@@ -1,6 +1,7 @@
 package com.compass.reinan.api_ecommerce.controller.impl;
 
 import com.compass.reinan.api_ecommerce.controller.SaleController;
+import com.compass.reinan.api_ecommerce.domain.dto.page.PageableResponse;
 import com.compass.reinan.api_ecommerce.domain.dto.sale.SaleRequest;
 import com.compass.reinan.api_ecommerce.domain.dto.sale.SaleResponse;
 import com.compass.reinan.api_ecommerce.domain.dto.sale.UpdateItemSale;
@@ -12,8 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @AllArgsConstructor
 @RestController
@@ -67,7 +66,8 @@ public class SaleControllerImpl implements SaleController {
     @Override
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     @GetMapping
-    public ResponseEntity<List<SaleResponse>> findAllSales() {
-        return ResponseEntity.ok().body(saleService.findAll());
+    public ResponseEntity<PageableResponse<SaleResponse>> findAllSales(@RequestParam(defaultValue = "0")  int page,
+                                                                       @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok().body(saleService.findAll(page, size));
     }
 }

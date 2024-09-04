@@ -1,5 +1,6 @@
 package com.compass.reinan.api_ecommerce.controller;
 
+import com.compass.reinan.api_ecommerce.domain.dto.user.request.UpdatePasswordRequest;
 import com.compass.reinan.api_ecommerce.domain.dto.user.response.PasswordTokenResponse;
 import com.compass.reinan.api_ecommerce.domain.dto.user.request.ForgetPasswordRequest;
 import com.compass.reinan.api_ecommerce.domain.dto.user.request.EmailUpdateRequest;
@@ -9,6 +10,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,14 @@ public interface UserRecoveryPasswordController {
     @Operation(
             summary = "Send a password reset email",
             description = "Sends a password reset email to the specified address. This email contains a link for resetting the password.",
+            requestBody = @RequestBody(
+                    description = "Request body for a email to the user.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = EmailUpdateRequest.class),
+                            examples = @ExampleObject(value = "{ \"newEmail\": \"juan@gmail.com\"}")
+                    )
+            ),
             responses = {
                     @ApiResponse(
                             responseCode = "200",
@@ -49,14 +59,22 @@ public interface UserRecoveryPasswordController {
                     )
             }
     )
-    ResponseEntity<PasswordTokenResponse> sendEmailToResetUserPassword(
-            @Parameter(description = "Request object containing the email address for which the password reset link will be sent.", required = true)
-            EmailUpdateRequest emailDto
-    );
+    ResponseEntity<PasswordTokenResponse> sendEmailToResetUserPassword(EmailUpdateRequest emailDto);
 
     @Operation(
             summary = "Reset the user's password using a token",
             description = "Resets the user's password using the provided token and new password. The token must be valid and not expired.",
+            parameters = {
+                    @Parameter(name = "token", description = "The token provided in the password reset email.", required = true)
+            },
+            requestBody = @RequestBody(
+                    description = "Request body for reset user password.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ForgetPasswordRequest.class),
+                            examples = @ExampleObject(value = "{ \"newPassword\": \"yourNewPassword\", \"confirmPassword\": \"yourNewPassword\" }")
+                    )
+            ),
             responses = {
                     @ApiResponse(
                             responseCode = "204",
@@ -95,10 +113,5 @@ public interface UserRecoveryPasswordController {
                     )
             }
     )
-    ResponseEntity<Void> resetUserPassword(
-            @Parameter(description = "The token provided in the password reset email.", required = true)
-            String token,
-            @Parameter(description = "Request object containing the new password and confirmation.", required = true)
-            ForgetPasswordRequest reset
-    );
+    ResponseEntity<Void> resetUserPassword(String token, ForgetPasswordRequest reset);
 }
