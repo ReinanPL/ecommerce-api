@@ -1,11 +1,13 @@
-<h1 style="text-align: center;">E-Commerce</h1>
+<h1>E-Commerce</h1>
 
-<p style="text-align: center;">
+<p>
+  <a href="https://www.linkedin.com/in/reinancarvalho323/" target="_blank">
   <img src="https://img.shields.io/static/v1?label=Linkedin&message=@reinancarvalho&color=8257E5&labelColor=000000" alt="@reinancarvalho" />
+</a>
   <img src="https://img.shields.io/static/v1?label=Tipo&message=Challenge&color=8257E5&labelColor=000000" alt="Challenge" />
 </p>
 
-<p style="text-align: center;">
+<p>
   <strong>This API provides a comprehensive solution for managing products, stock, sales, and users within an e-commerce platform. It supports CRUD operations, sales reporting, and user authentication. This project is part of a backend challenge for Compass developers.</strong>
 </p>
 
@@ -31,7 +33,7 @@
 
 ## 🏛️ Architecture
 
-<p style="text-align: center;">
+<p>
   <img src="docs/Diagrama ER.png" alt="ER Diagram" />
 </p>
 
