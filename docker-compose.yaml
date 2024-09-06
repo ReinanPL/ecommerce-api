@@ -17,7 +17,8 @@ services:
       MYSQL_PASSWORD: '${MYSQL_PASSWORD}'
     volumes:
       - db-data:/var/lib/mysql
-
+    networks:
+      - network
 
   phpmyadmin:
     image: phpmyadmin:5.2.1-apache
@@ -30,6 +31,8 @@ services:
       MYSQL_ROOT_PASSWORD: '${MYSQL_ROOT_PASSWORD}'
       MYSQL_USER: '${MYSQL_USER}'
       MYSQL_PASSWORD: '${MYSQL_PASSWORD}'
+    networks:
+      - network
 
   redis:
     image: redis:7.4-alpine
@@ -37,11 +40,37 @@ services:
     restart: always
     ports:
       - "6379:6379"
-    environment:
-      - REDIS_PASSWORD=password
     volumes:
       - cache:/data
+    networks:
+      - network
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+      - redis
+    container_name: app
+    ports:
+      - '8080:8080'
+    environment:
+      MYSQL_HOST: '${MYSQL_HOST}'
+      MYSQL_PORT: '${MYSQL_PORT}'
+      MYSQL_DATABASE: '${MYSQL_DATABASE}'
+      MYSQL_USER: '${MYSQL_USER}'
+      MYSQL_PASSWORD: '${MYSQL_PASSWORD}'
+      REDIS_HOST: '${REDIS_HOST}'
+      REDIS_PORT: '${REDIS_PORT}'
+    restart: on-failure
+    networks:
+      - network
 
 volumes:
   db-data:
   cache:
+
+networks:
+  network:
+    driver: bridge
