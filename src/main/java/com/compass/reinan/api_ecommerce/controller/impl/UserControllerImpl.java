@@ -22,7 +22,7 @@ public class UserControllerImpl implements UserController {
 
     @Override
     @PostMapping
-    public ResponseEntity<UserResponse> saveUser(@RequestBody @Valid UserCreateRequest userRequest) {
+    public ResponseEntity<UserResponse> saveUser(@RequestBody @Valid CreateUserRequest userRequest) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.saveUser(userRequest));
     }
 
@@ -44,7 +44,7 @@ public class UserControllerImpl implements UserController {
     @Override
     @PreAuthorize("hasAuthority('SCOPE_ADMIN') or (hasAuthority('SCOPE_CLIENT') and #cpf == authentication.name)")
     @PatchMapping("/{cpf}")
-    public ResponseEntity<UserResponse> updateUserEmail(@PathVariable String cpf, @RequestBody @Valid EmailUpdateRequest emailDto) {
+    public ResponseEntity<UserResponse> updateUserEmail(@PathVariable String cpf, @RequestBody @Valid UpdateEmailRequest emailDto) {
         return ResponseEntity.ok(userService.updateUserEmail(cpf, emailDto.newEmail()));
     }
 
@@ -59,14 +59,14 @@ public class UserControllerImpl implements UserController {
     @Override
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     @PatchMapping("/{cpf}/role")
-    public ResponseEntity<UserResponse> updateUserRole(@PathVariable String cpf, @RequestBody @Valid RoleUpdateRequest role) {
+    public ResponseEntity<UserResponse> updateUserRole(@PathVariable String cpf, @RequestBody @Valid UpdateRoleRequest role) {
         return ResponseEntity.ok().body(userService.updateUserRole(cpf, role.role()));
     }
 
     @Override
     @PreAuthorize("hasAuthority('SCOPE_ADMIN') or (hasAuthority('SCOPE_CLIENT') and #cpf == authentication.name)")
     @PatchMapping("/{cpf}/address")
-    public ResponseEntity<UserResponse> updateUserAddress(@PathVariable String cpf, @RequestBody @Valid AddressRequest addressDto) {
+    public ResponseEntity<UserResponse> updateUserAddress(@PathVariable String cpf, @RequestBody @Valid UpdateAddressRequest addressDto) {
         return ResponseEntity.ok(userService.updateUserAddress(cpf, addressDto));
     }
 

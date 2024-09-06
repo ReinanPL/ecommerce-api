@@ -1,9 +1,10 @@
 package com.compass.reinan.api_ecommerce.controller;
 
 import com.compass.reinan.api_ecommerce.domain.dto.page.PageableResponse;
-import com.compass.reinan.api_ecommerce.domain.dto.product.ProductRequest;
-import com.compass.reinan.api_ecommerce.domain.dto.product.ProductResponse;
-import com.compass.reinan.api_ecommerce.domain.dto.product.UpdateProductRequest;
+import com.compass.reinan.api_ecommerce.domain.dto.product.request.CreateProductRequest;
+import com.compass.reinan.api_ecommerce.domain.dto.product.response.ProductActiveResponse;
+import com.compass.reinan.api_ecommerce.domain.dto.product.response.ProductResponse;
+import com.compass.reinan.api_ecommerce.domain.dto.product.request.UpdateProductRequest;
 import com.compass.reinan.api_ecommerce.exception.ErrorMessage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -30,8 +31,8 @@ public interface ProductController {
                     description = "Request body for a new product.",
                     content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = ProductRequest.class),
-                            examples =@ExampleObject(value = "{ \"name\": \"Product A\", \"quantity_in_stock\": 10, \"price\": 19.99, \"category_id\": 1 }")
+                            schema = @Schema(implementation = CreateProductRequest.class),
+                            examples =@ExampleObject(value = "{ \"name\": \"Apple Watch Ultra 2\", \"quantity_in_stock\": 10, \"price\": 2400.99, \"category_id\": 1 }")
                     )
             ),
             responses = {
@@ -41,16 +42,34 @@ public interface ProductController {
                             content = @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = ProductResponse.class),
-                                    examples = @ExampleObject(value = "{\"id\":1,\"name\":\"Sample Product\",\"price\":19.99,\"active\":true}")
+                                    examples = @ExampleObject(value = "{\"id\":1,\"name\":\"Apple Watch Ultra 2\",\"quantity_in_stock\":10,\"price\":2400.99,\"category\":\"Informática\",\"active\":true}")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized. The user is not authenticated or the authentication credentials are missing/invalid.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Unauthorized access.\"}")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden. The authenticated user does not have permission to access this resource.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Access denied.\"}")
                             )
                     ),
                     @ApiResponse(
                             responseCode = "409",
-                            description = "Conflict due to a product with the same name already existing.",
+                            description = "Conflict due to a product with the same name already existing or category is not active..",
                             content = @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = ErrorMessage.class),
-                                    examples = @ExampleObject(value = "{\"error\":\"Product name already registered.\"}")
+                                    examples = @ExampleObject(value = "{\"error\":\"Product name already registered or category is not active..\"}")
                             )
                     ),
                     @ApiResponse(
@@ -64,7 +83,7 @@ public interface ProductController {
                     )
             }
     )
-    ResponseEntity<ProductResponse> saveProduct(ProductRequest productRequest);
+    ResponseEntity<ProductResponse> saveProduct(CreateProductRequest createProductRequest);
 
     @Operation(
             summary = "Retrieve a product by ID",
@@ -80,7 +99,16 @@ public interface ProductController {
                             content = @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = ProductResponse.class),
-                                    examples = @ExampleObject(value = "{\"id\":1,\"name\":\"Sample Product\",\"price\":19.99,\"active\":true}")
+                                    examples = @ExampleObject(value = "{\"id\":1,\"name\":\"Apple Watch Ultra 2\",\"quantity_in_stock\":10,\"price\":2400.99,\"category\":\"Informática\"}")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized. The user is not authenticated or the authentication credentials are missing/invalid.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Unauthorized access.\"}")
                             )
                     ),
                     @ApiResponse(
@@ -94,7 +122,7 @@ public interface ProductController {
                     )
             }
     )
-    ResponseEntity<ProductResponse> findProductById(Long id);
+    ResponseEntity<ProductActiveResponse> findProductById(Long id);
 
     @Operation(
             summary = "Delete a product by ID",
@@ -107,6 +135,24 @@ public interface ProductController {
                     @ApiResponse(
                             responseCode = "204",
                             description = "Product deleted successfully."
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized. The user is not authenticated or the authentication credentials are missing/invalid.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Unauthorized access.\"}")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden. The authenticated user does not have permission to access this resource.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Access denied.\"}")
+                            )
                     ),
                     @ApiResponse(
                             responseCode = "404",
@@ -142,7 +188,7 @@ public interface ProductController {
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = UpdateProductRequest.class),
-                            examples = @ExampleObject(value = "{ \"name\": \"Updated Product Name\", \"quantity_in_stock\": 15, \"price\": 24.99 }")
+                            examples = @ExampleObject(value = "{ \"name\": \"Apple Watch Ultra 2 GPS\", \"quantity_in_stock\": 15, \"price\": 2400.99 , \"category_id\": 3 }")
                     )
             ),
             responses = {
@@ -152,7 +198,25 @@ public interface ProductController {
                             content = @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = ProductResponse.class),
-                                    examples = @ExampleObject(value = "{\"id\":1,\"name\":\"Updated Product\",\"price\":29.99,\"active\":true}")
+                                    examples = @ExampleObject(value = "{\"id\":1,\"name\":\"Apple Watch Ultra 2 GPS\",\"quantity_in_stock\":15,\"price\":2400.99,\"category\":\"Informática\",\"active\":true}")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized. The user is not authenticated or the authentication credentials are missing/invalid.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Unauthorized access.\"}")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden. The authenticated user does not have permission to access this resource.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Access denied.\"}")
                             )
                     ),
                     @ApiResponse(
@@ -200,7 +264,25 @@ public interface ProductController {
                             content = @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = ProductResponse.class),
-                                    examples = @ExampleObject(value = "{\"id\":1,\"name\":\"Sample Product\",\"price\":19.99,\"active\":true}")
+                                    examples = @ExampleObject(value = "{\"id\":1,\"name\":\"Apple Watch Ultra 2\",\"quantity_in_stock\":10,\"price\":2400.99,\"category\":\"ELECTRONICS\",\"active\":true}")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized. The user is not authenticated or the authentication credentials are missing/invalid.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Unauthorized access.\"}")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden. The authenticated user does not have permission to access this resource.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Access denied.\"}")
                             )
                     ),
                     @ApiResponse(
@@ -239,10 +321,28 @@ public interface ProductController {
                             description = "List of all registered products retrieved successfully.",
                             content = @Content(
                                     mediaType = "application/json",
-                                    examples = @ExampleObject(value = "[{\"id\":1,\"name\":\"Sample Product\",\"price\":19.99,\"active\":true}, {\"id\":2,\"name\":\"Another Product\",\"price\":29.99,\"active\":false}]"),
+                                    examples = @ExampleObject(value = "[{\"id\":1,\"name\":\"Apple Watch Ultra 2\",\"quantity_in_stock\":15,\"price\":2400.99,\"category\":\"Eletrônicos\",\"active\":true}, {\"id\":2,\"name\":\"Apple Watch Series 9 \",\"quantity_in_stock\":3,\"price\":2100.99,\"category\":\"Eletrônicos\",\"active\":false}]"),
                                     array = @ArraySchema(
                                             schema = @Schema(implementation = ProductResponse.class)
                                     )
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized. The user is not authenticated or the authentication credentials are missing/invalid.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Unauthorized access.\"}")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden. The authenticated user does not have permission to access this resource.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Access denied.\"}")
                             )
                     )
             }
@@ -254,9 +354,9 @@ public interface ProductController {
             description = "Retrieves a paginated list of active products that match the specified filters for category and price range. This endpoint only returns products that are active and have a stock greater than 0.",
             security = @SecurityRequirement(name = "security"),
             parameters = {
-                    @Parameter(name = "categoryId", description = "The ID of the category to filter products by. Pass null to ignore this filter.", schema = @Schema(type = "integer", example = "1")),
-                    @Parameter(name = "minPrice", description = "The minimum price of the products to include. Pass null to ignore this filter.", schema = @Schema(type = "number", format = "float", example = "10.00")),
-                    @Parameter(name = "maxPrice", description = "The maximum price of the products to include. Pass null to ignore this filter.", schema = @Schema(type = "number", format = "float", example = "100.00")),
+                    @Parameter(name = "categoryId", description = "The ID of the category to filter products by. Pass null to ignore this filter.", schema = @Schema(type = "integer")),
+                    @Parameter(name = "minPrice", description = "The minimum price of the products to include. Pass null to ignore this filter.", schema = @Schema(type = "number", format = "BigDecimal", example = "10.00")),
+                    @Parameter(name = "maxPrice", description = "The maximum price of the products to include. Pass null to ignore this filter.", schema = @Schema(type = "number", format = "BigDecimal", example = "5000.00")),
                     @Parameter(name = "page", description = "The page number to retrieve (starting from 0).", required = true, schema = @Schema(type = "integer", example = "0")),
                     @Parameter(name = "size", description = "The number of products per page.", required = true, schema = @Schema(type = "integer", example = "10"))
             },
@@ -266,13 +366,22 @@ public interface ProductController {
                             description = "List of active products retrieved successfully.",
                             content = @Content(
                                     mediaType = "application/json",
-                                    examples = @ExampleObject(value = "[{\"id\":1,\"name\":\"Sample Product\",\"price\":19.99,\"active\":true}, {\"id\":3,\"name\":\"Filtered Product\",\"price\":25.99,\"active\":true}]"),
+                                    examples = @ExampleObject(value = "[{\"id\":1,\"name\":\"Apple Watch Ultra 2\",\"quantity_in_stock\":15,\"price\":2400.99,\"category\":\"Eletrônicos\"}, {\"id\":2,\"name\":\"Apple Watch Series 9 \",\"quantity_in_stock\":3,\"price\":2100.99,\"category\":\"Eletrônicos\"}]"),
                                     array = @ArraySchema(
                                             schema = @Schema(implementation = ProductResponse.class)
                                     )
                             )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized. The user is not authenticated or the authentication credentials are missing/invalid.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Unauthorized access.\"}")
+                            )
                     )
             }
     )
-    ResponseEntity<PageableResponse<ProductResponse>> findAllProductsActives(Long categoryId, BigDecimal minPrice, BigDecimal maxPrice, int page, int size);
+    ResponseEntity<PageableResponse<ProductActiveResponse>> findAllProductsActives(Long categoryId, BigDecimal minPrice, BigDecimal maxPrice, int page, int size);
 }

@@ -2,9 +2,10 @@ package com.compass.reinan.api_ecommerce.controller.impl;
 
 import com.compass.reinan.api_ecommerce.controller.ProductController;
 import com.compass.reinan.api_ecommerce.domain.dto.page.PageableResponse;
-import com.compass.reinan.api_ecommerce.domain.dto.product.ProductRequest;
-import com.compass.reinan.api_ecommerce.domain.dto.product.ProductResponse;
-import com.compass.reinan.api_ecommerce.domain.dto.product.UpdateProductRequest;
+import com.compass.reinan.api_ecommerce.domain.dto.product.request.CreateProductRequest;
+import com.compass.reinan.api_ecommerce.domain.dto.product.response.ProductActiveResponse;
+import com.compass.reinan.api_ecommerce.domain.dto.product.response.ProductResponse;
+import com.compass.reinan.api_ecommerce.domain.dto.product.request.UpdateProductRequest;
 import com.compass.reinan.api_ecommerce.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -25,14 +26,14 @@ public class ProductControllerImpl implements ProductController {
     @Override
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     @PostMapping
-    public ResponseEntity<ProductResponse> saveProduct(@RequestBody @Valid ProductRequest productRequest) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(productService.save(productRequest));
+    public ResponseEntity<ProductResponse> saveProduct(@RequestBody @Valid CreateProductRequest createProductRequest) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(productService.save(createProductRequest));
     }
 
     @Override
     @PreAuthorize("hasAuthority('SCOPE_ADMIN') or hasAuthority('SCOPE_CLIENT')")
     @GetMapping("{id}")
-    public ResponseEntity<ProductResponse> findProductById(@PathVariable Long id) {
+    public ResponseEntity<ProductActiveResponse> findProductById(@PathVariable Long id) {
         return ResponseEntity.ok().body(productService.findById(id));
     }
 
@@ -69,11 +70,11 @@ public class ProductControllerImpl implements ProductController {
     @Override
     @PreAuthorize("hasAuthority('SCOPE_ADMIN') or hasAuthority('SCOPE_CLIENT')")
     @GetMapping
-    public ResponseEntity<PageableResponse<ProductResponse>> findAllProductsActives(@RequestParam(required = false) Long categoryId,
-                                                                                      @RequestParam(required = false) BigDecimal minPrice,
-                                                                                      @RequestParam(required = false) BigDecimal maxPrice,
-                                                                                      @RequestParam(defaultValue = "0") int page,
-                                                                                      @RequestParam(defaultValue = "10") int size) {
+    public ResponseEntity<PageableResponse<ProductActiveResponse>> findAllProductsActives(@RequestParam(required = false) Long categoryId,
+                                                                                          @RequestParam(required = false) BigDecimal minPrice,
+                                                                                          @RequestParam(required = false) BigDecimal maxPrice,
+                                                                                          @RequestParam(defaultValue = "0") int page,
+                                                                                          @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok().body(productService.findAllProductActives(categoryId, page, size, minPrice, maxPrice));
 
     }

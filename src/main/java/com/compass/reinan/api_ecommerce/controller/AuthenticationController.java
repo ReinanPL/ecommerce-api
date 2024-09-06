@@ -1,11 +1,9 @@
 package com.compass.reinan.api_ecommerce.controller;
 
-import com.compass.reinan.api_ecommerce.domain.dto.category.CategoryRequestDto;
 import com.compass.reinan.api_ecommerce.domain.dto.security.UserLoginRequest;
 import com.compass.reinan.api_ecommerce.domain.dto.security.UserTokenResponse;
 import com.compass.reinan.api_ecommerce.exception.ErrorMessage;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -25,7 +23,7 @@ public interface AuthenticationController {
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = UserLoginRequest.class),
-                            examples = @ExampleObject(value = "{ \"cpf\": \"12345678900\", \"password\": \"yourStrongPassword\" }")
+                            examples = @ExampleObject(value = "{ \"user_cpf\": \"43721493010\", \"password\": \"123456\" }")
                     )
             ),
             responses = {

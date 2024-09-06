@@ -2,10 +2,10 @@ package com.compass.reinan.api_ecommerce.controller.impl;
 
 import com.compass.reinan.api_ecommerce.controller.SaleController;
 import com.compass.reinan.api_ecommerce.domain.dto.page.PageableResponse;
-import com.compass.reinan.api_ecommerce.domain.dto.sale.SaleRequest;
-import com.compass.reinan.api_ecommerce.domain.dto.sale.SaleResponse;
-import com.compass.reinan.api_ecommerce.domain.dto.sale.UpdateItemSale;
-import com.compass.reinan.api_ecommerce.domain.dto.sale.UpdatePatchItemSale;
+import com.compass.reinan.api_ecommerce.domain.dto.sale.request.CreateSaleRequest;
+import com.compass.reinan.api_ecommerce.domain.dto.sale.response.SaleResponse;
+import com.compass.reinan.api_ecommerce.domain.dto.sale.request.UpdateItemSaleRequest;
+import com.compass.reinan.api_ecommerce.domain.dto.sale.request.UpdatePatchItemSaleRequest;
 import com.compass.reinan.api_ecommerce.service.SaleService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -24,8 +24,8 @@ public class SaleControllerImpl implements SaleController {
     @Override
     @PreAuthorize("hasAuthority('SCOPE_ADMIN') or hasAuthority('SCOPE_CLIENT')")
     @PostMapping
-    public ResponseEntity<SaleResponse> saveSale(@RequestBody @Valid SaleRequest saleRequest) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(saleService.save(saleRequest));
+    public ResponseEntity<SaleResponse> saveSale(@RequestBody @Valid CreateSaleRequest createSaleRequest) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(saleService.save(createSaleRequest));
     }
 
     @Override
@@ -52,14 +52,14 @@ public class SaleControllerImpl implements SaleController {
     @Override
     @PreAuthorize("hasAuthority('SCOPE_ADMIN') or hasAuthority('SCOPE_CLIENT')")
     @PutMapping("/{id}")
-    public ResponseEntity<SaleResponse> updateSale(@PathVariable Long id, @RequestBody @Valid UpdateItemSale itemSaleRequest) {
+    public ResponseEntity<SaleResponse> updateSale(@PathVariable Long id, @RequestBody @Valid UpdateItemSaleRequest itemSaleRequest) {
         return ResponseEntity.ok().body(saleService.updateSale(id, itemSaleRequest));
     }
 
     @Override
     @PreAuthorize("hasAuthority('SCOPE_ADMIN') or hasAuthority('SCOPE_CLIENT')")
     @PatchMapping("/{id}")
-    public ResponseEntity<SaleResponse> patchSale(@PathVariable Long id, @RequestBody @Valid UpdatePatchItemSale patchItemSale) {
+    public ResponseEntity<SaleResponse> patchSale(@PathVariable Long id, @RequestBody @Valid UpdatePatchItemSaleRequest patchItemSale) {
         return ResponseEntity.ok().body(saleService.patchSale(id, patchItemSale));
     }
 

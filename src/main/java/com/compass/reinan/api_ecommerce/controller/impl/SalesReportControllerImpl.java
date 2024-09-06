@@ -1,7 +1,7 @@
 package com.compass.reinan.api_ecommerce.controller.impl;
 
 import com.compass.reinan.api_ecommerce.controller.SalesReportController;
-import com.compass.reinan.api_ecommerce.domain.dto.sale.SaleResponse;
+import com.compass.reinan.api_ecommerce.domain.dto.sale.response.SaleResponse;
 import com.compass.reinan.api_ecommerce.service.SalesReportService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;

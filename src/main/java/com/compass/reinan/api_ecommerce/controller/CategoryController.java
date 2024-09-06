@@ -1,8 +1,7 @@
 package com.compass.reinan.api_ecommerce.controller;
 
-import com.compass.reinan.api_ecommerce.domain.dto.category.CategoryRequestDto;
-import com.compass.reinan.api_ecommerce.domain.dto.category.CategoryResponseDto;
-import com.compass.reinan.api_ecommerce.domain.dto.product.ProductRequest;
+import com.compass.reinan.api_ecommerce.domain.dto.category.CategoryResponse;
+import com.compass.reinan.api_ecommerce.domain.dto.category.CreateCategoryRequest;
 import com.compass.reinan.api_ecommerce.exception.ErrorMessage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -29,8 +28,8 @@ public interface CategoryController {
                     description = "Request body for a new category name.",
                     content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = CategoryRequestDto.class),
-                            examples = @ExampleObject(value = "{ \"name\": \"Electronics\" }")
+                            schema = @Schema(implementation = CreateCategoryRequest.class),
+                            examples = @ExampleObject(value = "{ \"name\": \"Suplementos\" }")
                     )
             ),
             responses = {
@@ -39,10 +38,28 @@ public interface CategoryController {
                             description = "Category created successfully.",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = CategoryResponseDto.class),
-                                    examples = @ExampleObject(value = "{\"id\":1,\"name\":\"Electronics\",\"active\":true}")
+                                    schema = @Schema(implementation = CategoryResponse.class),
+                                    examples = @ExampleObject(value = "{\"id\":1,\"name\":\"Suplementos\",\"active\":true}")
                             )
                     ),
+                    @ApiResponse(
+                    responseCode = "401",
+                    description = "Unauthorized. The user is not authenticated or the authentication credentials are missing/invalid.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorMessage.class),
+                            examples = @ExampleObject(value = "{\"error\":\"Unauthorized access.\"}")
+                    )
+            ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden. The authenticated user does not have permission to access this resource.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Access denied.\"}")
+                            )
+                    ) ,
                     @ApiResponse(
                             responseCode = "409",
                             description = "Category name already exists.",
@@ -63,7 +80,7 @@ public interface CategoryController {
                     )
             }
     )
-    ResponseEntity<CategoryResponseDto> saveCategory(CategoryRequestDto categoryRequestDto);
+    ResponseEntity<CategoryResponse> saveCategory(CreateCategoryRequest createCategoryRequest);
 
     @Operation(
             summary = "Retrieve a category by ID",
@@ -78,8 +95,26 @@ public interface CategoryController {
                             description = "Category retrieved successfully.",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = CategoryResponseDto.class),
-                                    examples = @ExampleObject(value = "{\"id\":1,\"name\":\"Electronics\",\"active\":true}")
+                                    schema = @Schema(implementation = CategoryResponse.class),
+                                    examples = @ExampleObject(value = "{\"id\":1,\"name\":\"Suplementos\",\"active\":true}")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized. The user is not authenticated or the authentication credentials are missing/invalid.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Unauthorized access.\"}")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden. The authenticated user does not have permission to access this resource.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Access denied.\"}")
                             )
                     ),
                     @ApiResponse(
@@ -93,7 +128,7 @@ public interface CategoryController {
                     )
             }
     )
-    ResponseEntity<CategoryResponseDto> getCategoryById(Long id);
+    ResponseEntity<CategoryResponse> getCategoryById(Long id);
 
     @Operation(
             summary = "Delete a category by ID",
@@ -106,6 +141,24 @@ public interface CategoryController {
                     @ApiResponse(
                             responseCode = "204",
                             description = "Category deleted successfully."
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized. The user is not authenticated or the authentication credentials are missing/invalid.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Unauthorized access.\"}")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden. The authenticated user does not have permission to access this resource.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Access denied.\"}")
+                            )
                     ),
                     @ApiResponse(
                             responseCode = "404",
@@ -142,8 +195,26 @@ public interface CategoryController {
                             description = "Category activated successfully.",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = CategoryResponseDto.class),
-                                    examples = @ExampleObject(value = "{\"id\":1,\"name\":\"Electronics\",\"active\":true}")
+                                    schema = @Schema(implementation = CategoryResponse.class),
+                                    examples = @ExampleObject(value = "{\"id\":1,\"name\":\"Suplementos\",\"active\":true}")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized. The user is not authenticated or the authentication credentials are missing/invalid.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Unauthorized access.\"}")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden. The authenticated user does not have permission to access this resource.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Access denied.\"}")
                             )
                     ),
                     @ApiResponse(
@@ -166,7 +237,7 @@ public interface CategoryController {
                     )
             }
     )
-    ResponseEntity<CategoryResponseDto> activeCategory(Long id);
+    ResponseEntity<CategoryResponse> activeCategory(Long id);
 
     @Operation(
             summary = "Update a category's name",
@@ -179,8 +250,8 @@ public interface CategoryController {
                     description = "Request body for a update a category name.",
                     content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = CategoryRequestDto.class),
-                            examples = @ExampleObject(value = "{ \"name\": \"Electronics\" }")
+                            schema = @Schema(implementation = CreateCategoryRequest.class),
+                            examples = @ExampleObject(value = "{ \"name\": \"Roupas\" }")
                     )
             ),
             responses = {
@@ -189,8 +260,26 @@ public interface CategoryController {
                             description = "Category name updated successfully.",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = CategoryResponseDto.class),
-                                    examples = @ExampleObject(value = "{\"id\":1,\"name\":\"Updated Category Name\",\"active\":true}")
+                                    schema = @Schema(implementation = CategoryResponse.class),
+                                    examples = @ExampleObject(value = "{\"id\":1,\"name\":\"Roupas\",\"active\":true}")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized. The user is not authenticated or the authentication credentials are missing/invalid.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Unauthorized access.\"}")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden. The authenticated user does not have permission to access this resource.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Access denied.\"}")
                             )
                     ),
                     @ApiResponse(
@@ -222,7 +311,7 @@ public interface CategoryController {
                     )
             }
     )
-    ResponseEntity<CategoryResponseDto> updateCategoryName(Long id, CategoryRequestDto requestDto);
+    ResponseEntity<CategoryResponse> updateCategoryName(Long id, CreateCategoryRequest requestDto);
 
     @Operation(
             summary = "List all categories",
@@ -234,13 +323,31 @@ public interface CategoryController {
                             description = "List of all registered categories retrieved successfully.",
                             content = @Content(
                                     mediaType = "application/json",
-                                    examples = @ExampleObject(value = "[{\"id\":1,\"name\":\"Electronics\",\"active\":true}, {\"id\":2,\"name\":\"Home Appliances\",\"active\":true}]"),
+                                    examples = @ExampleObject(value = "[{\"id\":1,\"name\":\"Suplementos\",\"active\":true}, {\"id\":2,\"name\":\"Roupas\",\"active\":true}]"),
                                     array = @ArraySchema(
-                                            schema = @Schema(implementation = CategoryResponseDto.class)
+                                            schema = @Schema(implementation = CategoryResponse.class)
                                     )
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized. The user is not authenticated or the authentication credentials are missing/invalid.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Unauthorized access.\"}")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden. The authenticated user does not have permission to access this resource.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Access denied.\"}")
                             )
                     )
             }
     )
-    ResponseEntity<List<CategoryResponseDto>> getAllCategories();
+    ResponseEntity<List<CategoryResponse>> getAllCategories();
 }

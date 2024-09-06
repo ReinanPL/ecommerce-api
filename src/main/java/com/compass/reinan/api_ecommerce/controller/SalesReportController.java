@@ -1,6 +1,6 @@
 package com.compass.reinan.api_ecommerce.controller;
 
-import com.compass.reinan.api_ecommerce.domain.dto.sale.SaleResponse;
+import com.compass.reinan.api_ecommerce.domain.dto.sale.response.SaleResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springdoc.api.ErrorMessage;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
@@ -33,7 +34,25 @@ public interface SalesReportController {
                             content = @Content(
                                     mediaType = "application/json",
                                     array = @ArraySchema(schema = @Schema(implementation = SaleResponse.class)),
-                                    examples = @ExampleObject(value = "[{\"id\":1,\"dateSale\":\"2024-09-01T00:00:00Z\",\"userCpf\":\"12345678900\",\"status\":\"PROCESSING\",\"items\":[{\"productId\":1,\"quantity\":2,\"price\":50.00}],\"totalValue\":100.00}]")
+                                    examples = @ExampleObject(value = "[{\"id\":1,\"date_sale\":\"2024-09-01T00:00:00Z\",\"user_cpf\":\"12345678900\",\"status\":\"PROCESSING\",\"items\":[{\"product_id\":1,\"quantity\":2,\"price\":50.00}],\"total_value\":100.00}]")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized. The user is not authenticated or the authentication credentials are missing/invalid.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Unauthorized access.\"}")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden. The authenticated user does not have permission to access this resource.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Access denied.\"}")
                             )
                     )
             }
@@ -54,7 +73,25 @@ public interface SalesReportController {
                             content = @Content(
                                     mediaType = "application/json",
                                     array = @ArraySchema(schema = @Schema(implementation = SaleResponse.class)),
-                                    examples = @ExampleObject(value = "[{\"id\":1,\"dateSale\":\"2024-09-01T00:00:00Z\",\"userCpf\":\"12345678900\",\"status\":\"PROCESSING\",\"items\":[{\"productId\":1,\"quantity\":2,\"price\":50.00}],\"totalValue\":100.00}]")
+                                    examples = @ExampleObject(value = "[{\"id\":1,\"date_sale\":\"2024-09-01T00:00:00Z\",\"user_cpf\":\"12345678900\",\"status\":\"PROCESSING\",\"items\":[{\"product_id\":1,\"quantity\":2,\"price\":50.00}],\"total_value\":100.00}]")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized. The user is not authenticated or the authentication credentials are missing/invalid.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Unauthorized access.\"}")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden. The authenticated user does not have permission to access this resource.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Access denied.\"}")
                             )
                     )
             }
@@ -77,8 +114,26 @@ public interface SalesReportController {
                             description = "List of sales for the specified date.",
                             content = @Content(
                                     mediaType = "application/json",
-                                    examples = @ExampleObject(value = "[{\"id\":1,\"dateSale\":\"2024-09-01T00:00:00Z\",\"userCpf\":\"12345678900\",\"status\":\"PROCESSING\",\"items\":[{\"productId\":1,\"quantity\":2,\"price\":50.00}],\"totalValue\":100.00}]"),
+                                    examples = @ExampleObject(value = "[{\"id\":1,\"date_sale\":\"2024-09-01T00:00:00Z\",\"user_cpf\":\"12345678900\",\"status\":\"PROCESSING\",\"items\":[{\"product_id\":1,\"quantity\":2,\"price\":50.00}],\"total_value\":100.00}]"),
                                     array = @ArraySchema(schema = @Schema(implementation = SaleResponse.class))
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized. The user is not authenticated or the authentication credentials are missing/invalid.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Unauthorized access.\"}")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden. The authenticated user does not have permission to access this resource.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Access denied.\"}")
                             )
                     )
             }

@@ -1,9 +1,9 @@
 package com.compass.reinan.api_ecommerce.controller;
 
-import com.compass.reinan.api_ecommerce.domain.dto.user.request.UpdatePasswordRequest;
+import com.compass.reinan.api_ecommerce.domain.dto.user.request.ForgetPasswordEmailRequest;
 import com.compass.reinan.api_ecommerce.domain.dto.user.response.PasswordTokenResponse;
 import com.compass.reinan.api_ecommerce.domain.dto.user.request.ForgetPasswordRequest;
-import com.compass.reinan.api_ecommerce.domain.dto.user.request.EmailUpdateRequest;
+import com.compass.reinan.api_ecommerce.domain.dto.user.request.UpdateEmailRequest;
 import com.compass.reinan.api_ecommerce.exception.ErrorMessage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -25,8 +25,8 @@ public interface UserRecoveryPasswordController {
                     description = "Request body for a email to the user.",
                     content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = EmailUpdateRequest.class),
-                            examples = @ExampleObject(value = "{ \"newEmail\": \"juan@gmail.com\"}")
+                            schema = @Schema(implementation = ForgetPasswordEmailRequest.class),
+                            examples = @ExampleObject(value = "{ \"email\": \"joao.silva@example.com\"}")
                     )
             ),
             responses = {
@@ -59,7 +59,7 @@ public interface UserRecoveryPasswordController {
                     )
             }
     )
-    ResponseEntity<PasswordTokenResponse> sendEmailToResetUserPassword(EmailUpdateRequest emailDto);
+    ResponseEntity<PasswordTokenResponse> sendEmailToResetUserPassword(ForgetPasswordEmailRequest emailRequest);
 
     @Operation(
             summary = "Reset the user's password using a token",
@@ -72,7 +72,7 @@ public interface UserRecoveryPasswordController {
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = ForgetPasswordRequest.class),
-                            examples = @ExampleObject(value = "{ \"newPassword\": \"yourNewPassword\", \"confirmPassword\": \"yourNewPassword\" }")
+                            examples = @ExampleObject(value = "{ \"new_password\": \"minhaSenha123\", \"confirm_password\": \"minhaSenha123\" }")
                     )
             ),
             responses = {

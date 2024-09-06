@@ -1,8 +1,8 @@
 package com.compass.reinan.api_ecommerce.controller.impl;
 
 import com.compass.reinan.api_ecommerce.controller.CategoryController;
-import com.compass.reinan.api_ecommerce.domain.dto.category.CategoryRequestDto;
-import com.compass.reinan.api_ecommerce.domain.dto.category.CategoryResponseDto;
+import com.compass.reinan.api_ecommerce.domain.dto.category.CategoryResponse;
+import com.compass.reinan.api_ecommerce.domain.dto.category.CreateCategoryRequest;
 import com.compass.reinan.api_ecommerce.service.CategoryService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -23,14 +23,14 @@ public class CategoryControllerImpl implements CategoryController {
     @Override
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     @PostMapping
-    public ResponseEntity<CategoryResponseDto> saveCategory(@RequestBody @Valid CategoryRequestDto categoryRequestDto){
-        return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.saveCategory(categoryRequestDto));
+    public ResponseEntity<CategoryResponse> saveCategory(@RequestBody @Valid CreateCategoryRequest createCategoryRequest){
+        return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.saveCategory(createCategoryRequest));
     }
 
     @Override
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     @GetMapping("/{id}")
-    public ResponseEntity<CategoryResponseDto> getCategoryById(@PathVariable Long id) {
+    public ResponseEntity<CategoryResponse> getCategoryById(@PathVariable Long id) {
         return ResponseEntity.ok().body(categoryService.findCategoryById(id));
     }
 
@@ -45,21 +45,21 @@ public class CategoryControllerImpl implements CategoryController {
     @Override
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     @PatchMapping("/{id}/active")
-    public ResponseEntity<CategoryResponseDto> activeCategory(@PathVariable Long id) {
+    public ResponseEntity<CategoryResponse> activeCategory(@PathVariable Long id) {
         return ResponseEntity.ok().body(categoryService.activeCategory(id));
     }
 
     @Override
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     @PatchMapping("/{id}/name")
-    public ResponseEntity<CategoryResponseDto> updateCategoryName(@PathVariable Long id, @RequestBody @Valid CategoryRequestDto requestDto) {
+    public ResponseEntity<CategoryResponse> updateCategoryName(@PathVariable Long id, @RequestBody @Valid CreateCategoryRequest requestDto) {
         return ResponseEntity.ok().body(categoryService.modifyCategoryName(id, requestDto.name()));
     }
 
     @Override
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     @GetMapping
-    public ResponseEntity<List<CategoryResponseDto>> getAllCategories() {
+    public ResponseEntity<List<CategoryResponse>> getAllCategories() {
         return ResponseEntity.ok().body(categoryService.getAllCategories());
     }
 }

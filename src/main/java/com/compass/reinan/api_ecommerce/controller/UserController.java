@@ -28,8 +28,8 @@ public interface UserController {
                     description = "Request body for a new user.",
                     content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = EmailUpdateRequest.class),
-                            examples = @ExampleObject(value = "{ \"cpf\": \"12345678900\", \"firstName\": \"John\", \"lastName\": \"Doe\", \"email\": \"john.doe@example.com\", \"password\": \"yourStrongPassword\", \"confirmPassword\": \"yourStrongPassword\", \"address\": { \"cep\": \"01234567\", \"city\": \"São Paulo\", \"state\": \"SP\", \"street\": \"Rua das Flores\", \"number\": \"123\", \"complement\": \"Apartamento 101\" } }")
+                            schema = @Schema(implementation = UpdateEmailRequest.class),
+                            examples = @ExampleObject(value = "{ \"cpf\": \"43721493010\", \"first_name\": \"Joao\", \"last_name\": \"Silva\", \"email\": \"joao.silva@example.com\", \"password\": \"123456\", \"confirm_password\": \"123456\", \"address\": { \"cep\": \"01234567\", \"city\": \"São Paulo\", \"state\": \"SP\", \"street\": \"Rua das Flores\", \"number\": \"123\", \"complement\": \"Apartamento 101\" }, \"role\":\"CLIENT\" }")
                     )
             ),
             responses = {
@@ -39,7 +39,7 @@ public interface UserController {
                             content = @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = UserResponse.class),
-                                    examples = @ExampleObject(value = "{\"cpf\":\"12345678900\",\"name\":\"John Doe\",\"email\":\"john.doe@example.com\",\"address\":\"123 Main St\",\"role\":\"USER\"}")
+                                    examples = @ExampleObject(value = "{ \"cpf\": \"43721493010\", \"first_name\": \"Joao\", \"last_name\": \"Silva\", \"email\": \"joao.silva@example.com\", \"address\": { \"cep\": \"01234567\", \"city\": \"São Paulo\", \"state\": \"SP\", \"street\": \"Rua das Flores\", \"number\": \"123\", \"complement\": \"Apartamento 101\" }, \"role\":\"CLIENT\" }")
                             )
                     ),
                     @ApiResponse(
@@ -62,7 +62,7 @@ public interface UserController {
                     )
             }
     )
-    ResponseEntity<UserResponse> saveUser(UserCreateRequest userRequest);
+    ResponseEntity<UserResponse> saveUser(CreateUserRequest userRequest);
 
     @Operation(
             summary = "Retrieve a user by CPF",
@@ -78,7 +78,25 @@ public interface UserController {
                             content = @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = UserResponse.class),
-                                    examples = @ExampleObject(value = "{\"cpf\":\"12345678900\",\"name\":\"John Doe\",\"email\":\"john.doe@example.com\",\"address\":\"123 Main St\",\"role\":\"USER\"}")
+                                    examples = @ExampleObject(value = "{ \"cpf\": \"43721493010\", \"first_name\": \"John\", \"last_name\": \"Joao\", \"Silva\": \"joao.silva@example.com\", \"address\": { \"cep\": \"01234567\", \"city\": \"São Paulo\", \"state\": \"SP\", \"street\": \"Rua das Flores\", \"number\": \"123\", \"complement\": \"Apartamento 101\" }, \"role\":\"CLIENT\" }")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized. The user is not authenticated or the authentication credentials are missing/invalid.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Unauthorized access.\"}")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden. The authenticated user does not have permission to access this resource.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Access denied.\"}")
                             )
                     ),
                     @ApiResponse(
@@ -110,12 +128,39 @@ public interface UserController {
                             description = "User deleted successfully."
                     ),
                     @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized. The user is not authenticated or the authentication credentials are missing/invalid.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Unauthorized access.\"}")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden. The authenticated user does not have permission to access this resource.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Access denied.\"}")
+                            )
+                    ),
+                    @ApiResponse(
                             responseCode = "404",
                             description = "User with the specified CPF not found.",
                             content = @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = ErrorMessage.class),
                                     examples = @ExampleObject(value = "{\"error\":\"User not found.\"}")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "409",
+                            description = "User has related sales and cannot be deleted.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"User has related sales.\"}")
                             )
                     )
             }
@@ -133,8 +178,8 @@ public interface UserController {
                     description = "Request body for a email to the user.",
                     content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = EmailUpdateRequest.class),
-                            examples = @ExampleObject(value = "{ \"newEmail\": \"juan@gmail.com\"}")
+                            schema = @Schema(implementation = UpdateEmailRequest.class),
+                            examples = @ExampleObject(value = "{ \"new_email\": \"novo.email@example.com\"}")
                     )
             ),
             responses = {
@@ -144,7 +189,25 @@ public interface UserController {
                             content = @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = UserResponse.class),
-                                    examples = @ExampleObject(value = "{\"cpf\":\"12345678900\",\"name\":\"John Doe\",\"email\":\"new.email@example.com\",\"address\":\"123 Main St\",\"role\":\"USER\"}")
+                                    examples = @ExampleObject(value = "{ \"cpf\": \"43721493010\", \"first_name\": \"Joao\", \"last_name\": \"Silva\", \"email\": \"novo.email@gmail.com\", \"address\": { \"cep\": \"01234567\", \"city\": \"São Paulo\", \"state\": \"SP\", \"street\": \"Rua das Flores\", \"number\": \"123\", \"complement\": \"Apartamento 101\" }, \"role\":\"CLIENT\" }")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized. The user is not authenticated or the authentication credentials are missing/invalid.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Unauthorized access.\"}")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden. The authenticated user does not have permission to access this resource.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Access denied.\"}")
                             )
                     ),
                     @ApiResponse(
@@ -176,7 +239,7 @@ public interface UserController {
                     )
             }
     )
-    ResponseEntity<UserResponse> updateUserEmail(String cpf, EmailUpdateRequest emailDto);
+    ResponseEntity<UserResponse> updateUserEmail(String cpf, UpdateEmailRequest emailDto);
 
     @Operation(
             summary = "Update a user password",
@@ -190,7 +253,7 @@ public interface UserController {
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = UpdatePasswordRequest.class),
-                            examples = @ExampleObject(value = "{ \"oldPassword\": \"yourOldPassword\", \"newPassword\": \"yourNewPassword\", \"confirmPassword\": \"yourNewPassword\" }")
+                            examples = @ExampleObject(value = "{ \"old_password\": \"123456\", \"new_password\": \"12345678\", \"confirm_password\": \"12345678\" }")
                     )
             ),
             responses = {
@@ -205,6 +268,24 @@ public interface UserController {
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = ErrorMessage.class),
                                     examples = @ExampleObject(value = "{\"error\":\"Password mismatch or invalid format.\"}")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized. The user is not authenticated or the authentication credentials are missing/invalid.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Unauthorized access.\"}")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden. The authenticated user does not have permission to access this resource.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Access denied.\"}")
                             )
                     ),
                     @ApiResponse(
@@ -240,7 +321,7 @@ public interface UserController {
                     description = "Request body for update the user role.",
                     content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = RoleUpdateRequest.class),
+                            schema = @Schema(implementation = UpdateRoleRequest.class),
                             examples = @ExampleObject(value = "{ \"role\": \"ADMIN\" }")
                     )
             ),
@@ -251,7 +332,25 @@ public interface UserController {
                             content = @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = UserResponse.class),
-                                    examples = @ExampleObject(value = "{\"cpf\":\"12345678900\",\"name\":\"John Doe\",\"email\":\"john.doe@example.com\",\"address\":\"123 Main St\",\"role\":\"ADMIN\"}")
+                                    examples = @ExampleObject(value = "{ \"cpf\": \"43721493010\", \"first_name\": \"Joao\", \"last_name\": \"Silva\", \"email\": \"joao.silva@example.com\", \"address\": { \"cep\": \"01234567\", \"city\": \"São Paulo\", \"state\": \"SP\", \"street\": \"Rua das Flores\", \"number\": \"123\", \"complement\": \"Apartamento 101\" }, \"role\" : \"ADMIN\" }")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized. The user is not authenticated or the authentication credentials are missing/invalid.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Unauthorized access.\"}")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden. The authenticated user does not have permission to access this resource.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Access denied.\"}")
                             )
                     ),
                     @ApiResponse(
@@ -283,7 +382,7 @@ public interface UserController {
                     )
             }
     )
-    ResponseEntity<UserResponse> updateUserRole(String cpf, RoleUpdateRequest role);
+    ResponseEntity<UserResponse> updateUserRole(String cpf, UpdateRoleRequest role);
 
     @Operation(
             summary = "Update a user address",
@@ -296,8 +395,8 @@ public interface UserController {
                     description = "Request body for new address to the user.",
                     content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = AddressRequest.class),
-                            examples = @ExampleObject(value = "{ \"cep\": \"01234567\", \"city\": \"São Paulo\", \"state\": \"SP\", \"street\": \"Rua das Flores\", \"number\": \"123\", \"complement\": \"Apartamento 101\" }")
+                            schema = @Schema(implementation = UpdateAddressRequest.class),
+                            examples = @ExampleObject(value = "{ \"cep\": \"01234567\", \"city\": \"São Paulo\", \"state\": \"SP\", \"street\": \"Rua das Margaridas\", \"number\": \"122\", \"complement\": \"Apartamento 101\" }")
                     )
             ),
             responses = {
@@ -307,7 +406,25 @@ public interface UserController {
                             content = @Content(
                                     mediaType = "application/json",
                                     schema = @Schema(implementation = UserResponse.class),
-                                    examples = @ExampleObject(value = "{\"cpf\":\"12345678900\",\"name\":\"John Doe\",\"email\":\"john.doe@example.com\",\"address\":\"456 Elm St\",\"role\":\"USER\"}")
+                                    examples = @ExampleObject(value = "{ \"cpf\": \"43721493010\", \"first_name\": \"Joao\", \"last_name\": \"Silva\", \"email\": \"joao.silva@example.com\", \"address\": { \"cep\": \"01234567\", \"city\": \"São Paulo\", \"state\": \"SP\", \"street\": \"Rua das Margaridas\", \"number\": \"122\", \"complement\": \"Apartamento 101\" } }")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Unauthorized. The user is not authenticated or the authentication credentials are missing/invalid.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Unauthorized access.\"}")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden. The authenticated user does not have permission to access this resource.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Access denied.\"}")
                             )
                     ),
                     @ApiResponse(
@@ -330,7 +447,7 @@ public interface UserController {
                     )
             }
     )
-    ResponseEntity<UserResponse> updateUserAddress(String cpf, AddressRequest addressDto);
+    ResponseEntity<UserResponse> updateUserAddress(String cpf, UpdateAddressRequest addressDto);
 
     @Operation(
             summary = "List all users",
@@ -342,11 +459,28 @@ public interface UserController {
                             description = "List of all registered users.",
                             content = @Content(
                                     mediaType = "application/json",
-                                    examples = @ExampleObject(value = "[{\"cpf\":\"12345678900\",\"name\":\"John Doe\",\"email\":\"john.doe@example.com\",\"address\":\"123 Main St\",\"role\":\"USER\"}, {\"cpf\":\"09876543210\",\"name\":\"Jane Smith\",\"email\":\"jane.smith@example.com\",\"address\":\"456 Elm St\",\"role\":\"ADMIN\"}]"),
+                                    examples = @ExampleObject(value = "[{ \"cpf\": \"43721493010\", \"first_name\": \"Joao\", \"last_name\": \"Silva\", \"email\": \"joao.silva@example.com\", \"address\": { \"cep\": \"01234567\", \"city\": \"São Paulo\", \"state\": \"SP\", \"street\": \"Rua das Margaridas\", \"number\": \"122\", \"complement\": \"Apartamento 101\",\"role\":\"ADMIN\"} }, { \"cpf\": \"24492471065\", \"first_name\": \"Lucas\", \"last_name\": \"Silva\", \"email\": \"lucas.silva@gmail.com\", \"address\": { \"cep\": \"01234567\", \"city\": \"São Paulo\", \"state\": \"SP\", \"street\": \"Rua das Margaridas\", \"number\": \"122\", \"complement\": \"Apartamento 101\",\"role\":\"CLIENT\"}}]"),
                                     array = @ArraySchema(
                                             schema = @Schema(implementation = UserResponse.class)
 
                                     )
+                            )
+                    ),@ApiResponse(
+                    responseCode = "401",
+                    description = "Unauthorized. The user is not authenticated or the authentication credentials are missing/invalid.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorMessage.class),
+                            examples = @ExampleObject(value = "{\"error\":\"Unauthorized access.\"}")
+                    )
+            ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden. The authenticated user does not have permission to access this resource.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Access denied.\"}")
                             )
                     )
             }
