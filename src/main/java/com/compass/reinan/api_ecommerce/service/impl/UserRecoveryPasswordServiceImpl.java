@@ -32,8 +32,10 @@ public class UserRecoveryPasswordServiceImpl implements UserRecoveryPasswordServ
 
         var token = UUID.randomUUID().toString();
         user.setResetPasswordToken(token);
+
         var tokenInstant = Instant.now().plusSeconds(1600);
         user.setTokenExpirationDate(tokenInstant);
+
         userRepository.save(user);
         return mapper.toResponsePassword(token, tokenInstant);
     }
@@ -43,12 +45,15 @@ public class UserRecoveryPasswordServiceImpl implements UserRecoveryPasswordServ
     public void resetUserPassword(String token, String newPassword, String confirmPassword) {
         var user = userRepository.findByResetPasswordToken(token)
                 .orElseThrow(() -> new EntityNotFoundException("Token not found"));
+
         Optional.of(user.getTokenExpirationDate().isAfter(Instant.now()))
                 .filter(expired ->expired)
                 .orElseThrow(() -> new PasswordTokenViolationException("Expired token"));
+
         Optional.of(newPassword)
                 .filter(p -> p.equals(confirmPassword))
                 .orElseThrow(() -> new PasswordInvalidException("New password does not match with confirm password."));
+
         user.setPassword(passwordEncoder.encode(newPassword));
         user.setResetPasswordToken(null);
         user.setTokenExpirationDate(null);

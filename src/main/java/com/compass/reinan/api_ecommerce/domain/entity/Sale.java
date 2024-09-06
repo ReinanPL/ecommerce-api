@@ -21,7 +21,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "sales")
+@Table(name = "tb_sales")
 public class Sale implements Serializable {
 
     @Id

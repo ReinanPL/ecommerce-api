@@ -26,7 +26,7 @@ public class AuthenticationService {
 
     public UserTokenResponse generateToken(User user){
         var now = Instant.now();
-        var expiresIn = 300L;
+        var expiresIn = 1800L;
 
         var scopes = user.getRole();
 

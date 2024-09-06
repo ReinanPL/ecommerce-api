@@ -1,7 +1,7 @@
 package com.compass.reinan.api_ecommerce.service.mapper;
 
-import com.compass.reinan.api_ecommerce.domain.dto.sale.ItemSaleRequest;
-import com.compass.reinan.api_ecommerce.domain.dto.sale.ItemSaleResponse;
+import com.compass.reinan.api_ecommerce.domain.dto.sale.request.CreateItemSaleRequest;
+import com.compass.reinan.api_ecommerce.domain.dto.sale.response.ItemSaleResponse;
 import com.compass.reinan.api_ecommerce.domain.entity.ItemSale;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -13,5 +13,5 @@ public interface SaleItemMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "price", ignore = true)
-    ItemSale toEntity(ItemSaleRequest itemSaleRequest);
+    ItemSale toEntity(CreateItemSaleRequest createItemSaleRequest);
 }

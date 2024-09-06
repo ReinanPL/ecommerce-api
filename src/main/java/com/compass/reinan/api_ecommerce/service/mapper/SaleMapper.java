@@ -1,8 +1,8 @@
 package com.compass.reinan.api_ecommerce.service.mapper;
 
-import com.compass.reinan.api_ecommerce.domain.dto.sale.ItemSaleResponse;
-import com.compass.reinan.api_ecommerce.domain.dto.sale.SaleRequest;
-import com.compass.reinan.api_ecommerce.domain.dto.sale.SaleResponse;
+import com.compass.reinan.api_ecommerce.domain.dto.sale.response.ItemSaleResponse;
+import com.compass.reinan.api_ecommerce.domain.dto.sale.request.CreateSaleRequest;
+import com.compass.reinan.api_ecommerce.domain.dto.sale.response.SaleResponse;
 import com.compass.reinan.api_ecommerce.domain.entity.Sale;
 import com.compass.reinan.api_ecommerce.util.DateUtils;
 import org.mapstruct.Mapper;
@@ -19,7 +19,7 @@ public interface SaleMapper {
     @Mapping(target = "status", constant = "PROCESSING")
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "user", ignore = true)
-    Sale toEntity(SaleRequest saleRequest);
+    Sale toEntity(CreateSaleRequest createSaleRequest);
 
     @Mapping(target = "userCpf", source = "user.cpf")
     @Mapping(target = "totalValue", expression = "java(calculateTotalValue(items))")

@@ -1,7 +1,11 @@
 package com.compass.reinan.api_ecommerce.service.impl;
 
 import com.compass.reinan.api_ecommerce.domain.dto.page.PageableResponse;
-import com.compass.reinan.api_ecommerce.domain.dto.sale.*;
+import com.compass.reinan.api_ecommerce.domain.dto.sale.request.CreateItemSaleRequest;
+import com.compass.reinan.api_ecommerce.domain.dto.sale.request.CreateSaleRequest;
+import com.compass.reinan.api_ecommerce.domain.dto.sale.request.UpdateItemSaleRequest;
+import com.compass.reinan.api_ecommerce.domain.dto.sale.request.UpdatePatchItemSaleRequest;
+import com.compass.reinan.api_ecommerce.domain.dto.sale.response.SaleResponse;
 import com.compass.reinan.api_ecommerce.domain.entity.*;
 import com.compass.reinan.api_ecommerce.domain.entity.enums.Status;
 import com.compass.reinan.api_ecommerce.exception.EntityActiveStatusException;
@@ -42,17 +46,17 @@ public class SaleServiceImpl implements SaleService {
     @Override
     @Transactional
     @CacheEvict(value = "sales", key = "#id", allEntries = true)
-    public SaleResponse save(SaleRequest saleRequest) {
-        var user = EntityUtils.getEntityOrThrow(saleRequest.user_cpf(), User.class, userRepository);
+    public SaleResponse save(CreateSaleRequest createSaleRequest) {
+        var user = EntityUtils.getEntityOrThrow(createSaleRequest.user_cpf(), User.class, userRepository);
 
-        checkUserAuthorization(saleRequest.user_cpf());
+        checkUserAuthorization(createSaleRequest.user_cpf());
 
-        var sale = saleMapper.toEntity(saleRequest);
+        var sale = saleMapper.toEntity(createSaleRequest);
         sale.setUser(user);
         sale.getItems().clear();
         var savedSale = saleRepository.save(sale);
 
-        processItems(savedSale, aggregateItems(saleRequest.items()));
+        processItems(savedSale, aggregateItems(createSaleRequest.items()));
 
         return saleMapper.toResponse(sale);
     }
@@ -99,7 +103,7 @@ public class SaleServiceImpl implements SaleService {
     @Override
     @Transactional
     @CachePut(value = "sales", key = "#id")
-    public SaleResponse updateSale(Long id, UpdateItemSale updateSaleRequest) {
+    public SaleResponse updateSale(Long id, UpdateItemSaleRequest updateSaleRequest) {
         var sale = EntityUtils.getEntityOrThrow(id, Sale.class, saleRepository);
 
         checkUserAuthorization(sale.getUser().getCpf());
@@ -114,7 +118,7 @@ public class SaleServiceImpl implements SaleService {
     @Override
     @Transactional
     @CachePut(value = "sales", key = "#id")
-    public SaleResponse patchSale(Long id, UpdatePatchItemSale patchSaleRequest) {
+    public SaleResponse patchSale(Long id, UpdatePatchItemSaleRequest patchSaleRequest) {
         var sale = EntityUtils.getEntityOrThrow(id, Sale.class, saleRepository);
 
         checkUserAuthorization(sale.getUser().getCpf());
@@ -134,18 +138,18 @@ public class SaleServiceImpl implements SaleService {
         return pageableMapper.toSaleResponse(saleRepository.findAllSales(pageable));
     }
 
-    private List<ItemSaleRequest> aggregateItems(List<ItemSaleRequest> items) {
+    private List<CreateItemSaleRequest> aggregateItems(List<CreateItemSaleRequest> items) {
         return items.stream()
                 .collect(Collectors.groupingBy(
-                        ItemSaleRequest::productId,
-                        Collectors.summingInt(ItemSaleRequest::quantity)
+                        CreateItemSaleRequest::productId,
+                        Collectors.summingInt(CreateItemSaleRequest::quantity)
                 ))
                 .entrySet().stream()
-                .map(entry -> new ItemSaleRequest(entry.getKey(), entry.getValue()))
+                .map(entry -> new CreateItemSaleRequest(entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList());
     }
 
-    private void processItems(Sale sale, List<ItemSaleRequest> itemRequests) {
+    private void processItems(Sale sale, List<CreateItemSaleRequest> itemRequests) {
         if (itemRequests == null || itemRequests.isEmpty()) {
             return;
         }

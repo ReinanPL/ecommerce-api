@@ -1,6 +1,6 @@
 package com.compass.reinan.api_ecommerce.service.impl;
 
-import com.compass.reinan.api_ecommerce.domain.dto.sale.SaleResponse;
+import com.compass.reinan.api_ecommerce.domain.dto.sale.response.SaleResponse;
 import com.compass.reinan.api_ecommerce.domain.entity.User;
 import com.compass.reinan.api_ecommerce.repository.SaleRepository;
 import com.compass.reinan.api_ecommerce.repository.UserRepository;

@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "item_sales")
+@Table(name = "tb_item_sales")
 public class ItemSale implements Serializable {
 
     @EmbeddedId

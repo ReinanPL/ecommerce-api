@@ -1,15 +1,17 @@
 package com.compass.reinan.api_ecommerce.service.impl;
 
-import com.compass.reinan.api_ecommerce.domain.dto.user.request.AddressRequest;
-import com.compass.reinan.api_ecommerce.domain.dto.user.request.UserCreateRequest;
+import com.compass.reinan.api_ecommerce.domain.dto.user.request.UpdateAddressRequest;
+import com.compass.reinan.api_ecommerce.domain.dto.user.request.CreateUserRequest;
 import com.compass.reinan.api_ecommerce.domain.dto.user.response.UserResponse;
+import com.compass.reinan.api_ecommerce.domain.entity.User;
 import com.compass.reinan.api_ecommerce.domain.entity.enums.Role;
 import com.compass.reinan.api_ecommerce.exception.DataUniqueViolationException;
-import com.compass.reinan.api_ecommerce.exception.EntityNotFoundException;
+import com.compass.reinan.api_ecommerce.exception.EntityActiveStatusException;
 import com.compass.reinan.api_ecommerce.exception.PasswordInvalidException;
 import com.compass.reinan.api_ecommerce.repository.UserRepository;
 import com.compass.reinan.api_ecommerce.service.UserService;
 import com.compass.reinan.api_ecommerce.service.mapper.UserMapper;
+import com.compass.reinan.api_ecommerce.util.EntityUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -30,11 +32,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserResponse saveUser(UserCreateRequest userRequest) {
+    public UserResponse saveUser(CreateUserRequest userRequest) {
         var user = mapper.toEntity(userRequest);
+
         Optional.of(userRepository.existsByCpf(user.getCpf()))
                 .filter(exists ->!exists)
                 .orElseThrow(() -> new DataUniqueViolationException(String.format("Cpf '%s' already exists", userRequest.cpf())));
+
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return mapper.toResponse(userRepository.save(user));
     }
@@ -42,27 +46,31 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public UserResponse getUserByCpf(String cpf) {
-        return userRepository.findByCpf(cpf)
-               .map(mapper::toResponse)
-               .orElseThrow(() -> new EntityNotFoundException(String.format("Cpf: '%s' not found ", cpf)));
+        var user = EntityUtils.getEntityOrThrow(cpf, User.class, userRepository);
+        return mapper.toResponse(user);
     }
 
     @Override
     @Transactional
     public void deleteUserByCpf(String cpf) {
-        var user = userRepository.findByCpf(cpf)
-                        .orElseThrow(() -> new EntityNotFoundException(String.format("Cpf: '%s' not found ", cpf)));
+        var user = EntityUtils.getEntityOrThrow(cpf, User.class, userRepository);
+
+        Optional.of(user.getSales().isEmpty())
+                        .filter(empty -> empty)
+                        .orElseThrow(() -> new EntityActiveStatusException(String.format("User with CPF: '%s' has associated sales and cannot be deleted. Remove the sales first.", cpf)));
+
         userRepository.delete(user);
     }
 
     @Override
     @Transactional
     public UserResponse updateUserEmail(String cpf, String email){
-        var user = userRepository.findByCpf(cpf)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("Cpf: '%s' not found ", cpf)));
+        var user = EntityUtils.getEntityOrThrow(cpf, User.class, userRepository);
+
         Optional.of(userRepository.existsByEmail(email))
                  .filter(exists ->!exists)
                  .orElseThrow(() -> new DataUniqueViolationException(String.format("Email '%s' already exists", email)));
+
         user.setEmail(email);
         return mapper.toResponse(userRepository.save(user));
     }
@@ -74,8 +82,7 @@ public class UserServiceImpl implements UserService {
                 .filter(p -> p.equals(confirmPassword))
                 .orElseThrow(() -> new PasswordInvalidException("New password does not match with confirm password."));
 
-        var user = userRepository.findByCpf(cpf)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("Cpf: '%s' not found ", cpf)));
+        var user = EntityUtils.getEntityOrThrow(cpf, User.class, userRepository);
         Optional.of(user)
                 .filter(u -> passwordEncoder.matches(oldPassword, user.getPassword()))
                 .orElseThrow(() -> new PasswordInvalidException("Old password does not match."));
@@ -87,8 +94,8 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserResponse updateUserRole(String cpf, String role) {
-        var user = userRepository.findByCpf(cpf)
-               .orElseThrow(() -> new EntityNotFoundException(String.format("Cpf: '%s' not found ", cpf)));
+        var user = EntityUtils.getEntityOrThrow(cpf, User.class, userRepository);
+
         Optional.of(Objects.equals(user.getRole().toString(), role.toUpperCase()))
                 .filter(sameRole ->!sameRole)
                 .orElseThrow(() -> new DataUniqueViolationException(String.format("The user already have this role: '%s'", role)));
@@ -99,11 +106,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public UserResponse updateUserAddress(String cpf, AddressRequest addressDto){
-        var user = userRepository.findByCpf(cpf)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("Cpf: '%s' not found ", cpf)));
+    public UserResponse updateUserAddress(String cpf, UpdateAddressRequest addressDto){
+        var user = EntityUtils.getEntityOrThrow(cpf, User.class, userRepository);
+
         var addressUpdate = mapper.toEntityAddress(addressDto);
         addressUpdate.setId(user.getAddress().getId());
+
         user.setAddress(addressUpdate);
         return mapper.toResponse(userRepository.save(user));
     }

@@ -3,7 +3,7 @@ package com.compass.reinan.api_ecommerce.domain.dto.user.request;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-public record AddressRequest(
+public record UpdateAddressRequest(
         @NotBlank(message = "Cep cannot be empty")
         @Size(min = 8, max = 8)
         String cep,

@@ -12,7 +12,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "Addresses")
+@Table(name = "tb_addresses")
 public class Address implements Serializable {
 
     @Id
@@ -20,7 +20,7 @@ public class Address implements Serializable {
     private Long id;
     @Column(name = "cep", nullable = false, length =8)
     private String cep;
-    @Column(name = "city", nullable = false, length =20)
+    @Column(name = "city", nullable = false, length =50)
     private String city;
     @Column(name = "state", nullable = false, length =2)
     private String state;

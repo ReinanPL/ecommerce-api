@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
@@ -15,6 +16,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     @Query("SELECT p FROM Product p")
     Page<Product> findAllProducts(Pageable pageable);
+
+    @Query("SELECT p FROM Product p WHERE p.id = :id AND p.active = true")
+    Optional<Product> findProductByIdAndActive(@Param("id") Long id);
 
     @Query("SELECT p FROM Product p WHERE p.active = true " +
             "AND p.quantityInStock > 0 " +

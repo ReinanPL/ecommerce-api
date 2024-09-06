@@ -1,6 +1,6 @@
 package com.compass.reinan.api_ecommerce.service;
 
-import com.compass.reinan.api_ecommerce.domain.dto.sale.SaleResponse;
+import com.compass.reinan.api_ecommerce.domain.dto.sale.response.SaleResponse;
 import java.util.List;
 
 public interface SalesReportService {
