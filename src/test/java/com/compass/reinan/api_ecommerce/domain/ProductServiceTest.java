@@ -1,28 +1,41 @@
 package com.compass.reinan.api_ecommerce.domain;
 
-import com.compass.reinan.api_ecommerce.domain.dto.product.ProductResponse;
+import com.compass.reinan.api_ecommerce.domain.dto.page.PageableResponse;
+import com.compass.reinan.api_ecommerce.domain.dto.product.response.ProductActiveResponse;
+import com.compass.reinan.api_ecommerce.domain.dto.product.response.ProductResponse;
+import com.compass.reinan.api_ecommerce.domain.dto.sale.response.SaleResponse;
+import com.compass.reinan.api_ecommerce.domain.entity.Product;
 import com.compass.reinan.api_ecommerce.exception.EntityActiveStatusException;
 import com.compass.reinan.api_ecommerce.exception.DataUniqueViolationException;
 import com.compass.reinan.api_ecommerce.exception.EntityNotFoundException;
 import com.compass.reinan.api_ecommerce.repository.CategoryRepository;
 import com.compass.reinan.api_ecommerce.repository.ProductRepository;
 import com.compass.reinan.api_ecommerce.service.impl.ProductServiceImpl;
+import com.compass.reinan.api_ecommerce.service.mapper.PageableMapper;
 import com.compass.reinan.api_ecommerce.service.mapper.ProductMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static com.compass.reinan.api_ecommerce.common.CategoryConstants.CATEGORY;
 import static com.compass.reinan.api_ecommerce.common.ProductConstants.*;
 import static com.compass.reinan.api_ecommerce.common.ProductConstants.PRODUCT_RESPONSE;
+import static com.compass.reinan.api_ecommerce.common.SaleConstants.*;
+import static com.compass.reinan.api_ecommerce.common.SaleConstants.PAGEABLE;
+import static com.compass.reinan.api_ecommerce.common.SaleConstants.PAGE_NUMBER;
+import static com.compass.reinan.api_ecommerce.common.SaleConstants.PAGE_SIZE;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -38,13 +51,17 @@ public class ProductServiceTest {
     @Mock
     private ProductMapper mapper;
 
+    @Mock
+    private PageableMapper pageMapper;
+
     @InjectMocks
     private ProductServiceImpl productService;
 
     @Test
     public void saveProduct_WithValidData_ShouldSaveAndReturnResponseDto() {
         when(productRepository.existsByName(PRODUCT.getName())).thenReturn(false);
-        when(mapper.toEntity(PRODUCT_REQUEST, categoryRepository)).thenReturn(PRODUCT);
+        when(categoryRepository.findById(1L)).thenReturn(Optional.of(CATEGORY));
+        when(mapper.toEntity(PRODUCT_REQUEST)).thenReturn(PRODUCT);
         when(productRepository.save(PRODUCT)).thenReturn(PRODUCT);
         when(mapper.toResponse(PRODUCT)).thenReturn(PRODUCT_RESPONSE);
 
@@ -57,7 +74,8 @@ public class ProductServiceTest {
 
     @Test
     public void saveProduct_WithNameAlreadyRegistered_ShouldThrowDataUniqueViolationException() {
-        when(mapper.toEntity(PRODUCT_REQUEST, categoryRepository)).thenReturn(PRODUCT);
+        when(mapper.toEntity(PRODUCT_REQUEST)).thenReturn(PRODUCT);
+        when(categoryRepository.findById(1L)).thenReturn(Optional.of(CATEGORY));
         when(productRepository.save(PRODUCT)).thenThrow(new DataUniqueViolationException("Product already exists"));
 
         assertThrows(DataUniqueViolationException.class, () -> productService.save(PRODUCT_REQUEST));
@@ -65,22 +83,22 @@ public class ProductServiceTest {
 
     @Test
     public void findProductById_WithExistingId_ShouldReturnResponseDto() {
-        when(productRepository.findById(1L)).thenReturn(Optional.of(PRODUCT));
-        when(mapper.toResponse(PRODUCT)).thenReturn(PRODUCT_RESPONSE);
+        when(productRepository.findProductByIdAndActive(1L)).thenReturn(Optional.of(PRODUCT));
+        when(mapper.toActiveResponse(PRODUCT)).thenReturn(PRODUCT_ACTIVE_RESPONSE);
 
-        ProductResponse actualResponseDto = productService.findById(1L);
+        ProductActiveResponse actualResponseDto = productService.findById(1L);
 
-        assertThat(actualResponseDto).isEqualTo(PRODUCT_RESPONSE);
-        verify(productRepository, times(1)).findById(1L);
+        assertThat(actualResponseDto).isEqualTo(PRODUCT_ACTIVE_RESPONSE);
+        verify(productRepository, times(1)).findProductByIdAndActive(1L);
     }
 
     @Test
     public void findProductById_WithNonExistingId_ShouldThrowEntityNotFoundException() {
-        when(productRepository.findById(1L)).thenReturn(Optional.empty());
+        when(productRepository.findProductByIdAndActive(1L)).thenReturn(Optional.empty());
 
         assertThrows(EntityNotFoundException.class, () -> productService.findById(1L));
 
-        verify(productRepository, times(1)).findById(1L);
+        verify(productRepository, times(1)).findProductByIdAndActive(1L);
     }
 
     @Test
@@ -136,23 +154,59 @@ public class ProductServiceTest {
 
     @Test
     public void getAllProducts_WithProducts_ShouldReturnListOfProductsDto() {
-        when(productRepository.findAll()).thenReturn(Collections.singletonList(PRODUCT));
-        when(mapper.toResponse(PRODUCT)).thenReturn(PRODUCT_RESPONSE);
+        when(productRepository.findAllProducts(PAGEABLE)).thenReturn(PRODUCT_PAGE);
+        when(pageMapper.toProductResponse(PRODUCT_PAGE)).thenReturn(PAGE_PRODUCT_RESPONSE);
 
-        List<ProductResponse> actualResponseDtoList = productService.findAll();
+        PageableResponse<ProductResponse> actualResponsePage  = productService.findAll(PAGE_NUMBER,PAGE_SIZE);
 
-        assertEquals(1, actualResponseDtoList.size());
-        assertEquals(PRODUCT_RESPONSE, actualResponseDtoList.get(0));
-        verify(productRepository, times(1)).findAll();
+        assertEquals(1, actualResponsePage.totalElements());
+        assertEquals(PRODUCT_RESPONSE, actualResponsePage.content().get(0));
+        verify(productRepository, times(1)).findAllProducts(PAGEABLE);
     }
 
     @Test
-    public void getAllProducts_WithNoProducts_ShouldReturnEmptyList() {
-        when(productRepository.findAll()).thenReturn(Collections.emptyList());
+    public void getAllProductsActives_WithProducts_ShouldReturnListOfProductsActives() {
+        when(productRepository.findProductsActiveByFilters(null, null, null, PAGEABLE)).thenReturn(PRODUCT_PAGE);
+        when(pageMapper.toProductActiveResponse(PRODUCT_PAGE)).thenReturn(PAGE_PRODUCT_CLIENT_RESPONSE);
 
-        List<ProductResponse> actualResponseDtoList = productService.findAll();
+        PageableResponse<ProductActiveResponse> actualResponsePage = productService.findAllProductActives(null, PAGE_NUMBER, PAGE_SIZE, null, null);
 
-        assertEquals(0, actualResponseDtoList.size());
-        verify(productRepository, times(1)).findAll();
+        assertEquals(1, actualResponsePage.totalElements());
+        assertEquals(PRODUCT_ACTIVE_RESPONSE, actualResponsePage.content().get(0));
+        verify(productRepository, times(1)).findProductsActiveByFilters(null, null, null, PAGEABLE);
+    }
+
+    public void getAllProducts_WithProducts_ShouldReturnEmptyList() {
+        when(productRepository.findAllProducts(PAGEABLE)).thenReturn(EMPTY_PRODUCT_PAGE);
+
+        PageableResponse<ProductResponse> actualResponsePage = productService.findAll(PAGE_NUMBER,PAGE_SIZE);
+
+        assertEquals(0, actualResponsePage.totalElements());
+        assertTrue(actualResponsePage.content().isEmpty());
+        verify(productRepository, times(1)).findAllProducts(PAGEABLE);
+    }
+
+    @Test
+    public void getAllSales_WithNoSales_ShouldReturnEmptyListt() {
+        when(productRepository.findProductsActiveByFilters(null, null, null, PAGEABLE)).thenReturn(EMPTY_PRODUCT_PAGE);
+        when(pageMapper.toProductActiveResponse(EMPTY_PRODUCT_PAGE)).thenReturn(PAGE_PRODUCT_ACTIVE_EMPTY_RESPONSE);
+
+        PageableResponse<ProductActiveResponse> actualResponsePage = productService.findAllProductActives(null, PAGE_NUMBER,PAGE_SIZE, null, null);
+
+        assertEquals(0, actualResponsePage.totalElements());
+        assertTrue(actualResponsePage.content().isEmpty());
+        verify(productRepository, times(1)).findProductsActiveByFilters(null, null, null, PAGEABLE);
+    }
+
+    @Test
+    public void getAllSales_WithNoSales_ShouldReturnEmptyList() {
+        when(productRepository.findAllProducts(PAGEABLE)).thenReturn(EMPTY_PRODUCT_PAGE);
+        when(pageMapper.toProductResponse(EMPTY_PRODUCT_PAGE)).thenReturn(PAGE_PRODUCT_EMPTY_RESPONSE);
+
+        PageableResponse<ProductResponse> actualResponsePage = productService.findAll(PAGE_NUMBER,PAGE_SIZE);
+
+        assertEquals(0, actualResponsePage.totalElements());
+        assertTrue(actualResponsePage.content().isEmpty());
+        verify(productRepository, times(1)).findAllProducts(PAGEABLE);
     }
 }

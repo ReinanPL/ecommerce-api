@@ -1,11 +1,13 @@
 package com.compass.reinan.api_ecommerce.domain;
 
-import com.compass.reinan.api_ecommerce.domain.dto.sale.SaleResponse;
+import com.compass.reinan.api_ecommerce.domain.dto.page.PageableResponse;
+import com.compass.reinan.api_ecommerce.domain.dto.sale.response.SaleResponse;
 import com.compass.reinan.api_ecommerce.exception.EntityNotFoundException;
 import com.compass.reinan.api_ecommerce.repository.ProductRepository;
 import com.compass.reinan.api_ecommerce.repository.SaleRepository;
 import com.compass.reinan.api_ecommerce.repository.UserRepository;
 import com.compass.reinan.api_ecommerce.service.impl.SaleServiceImpl;
+import com.compass.reinan.api_ecommerce.service.mapper.PageableMapper;
 import com.compass.reinan.api_ecommerce.service.mapper.SaleMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,12 +17,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 
 import static com.compass.reinan.api_ecommerce.common.ProductConstants.*;
 import static com.compass.reinan.api_ecommerce.common.SaleConstants.*;
+import static com.compass.reinan.api_ecommerce.common.SaleConstants.PAGEABLE;
+import static com.compass.reinan.api_ecommerce.common.SaleConstants.PAGE_NUMBER;
+import static com.compass.reinan.api_ecommerce.common.SaleConstants.PAGE_SIZE;
 import static com.compass.reinan.api_ecommerce.common.UserConstants.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -41,9 +44,11 @@ public class SaleServiceTest {
     @Mock
     private ProductRepository productRepository;
 
-
     @Mock
     private SaleMapper mapper;
+
+    @Mock
+    private PageableMapper pageMapper;
 
     @Test
     void save_Success() {
@@ -162,23 +167,25 @@ public class SaleServiceTest {
 
     @Test
     public void getAllSales_WithSales_ShouldReturnListOfSaleResponses() {
-        when(saleRepository.findAll()).thenReturn(Collections.singletonList(SALE));
-        when(mapper.toResponse(SALE)).thenReturn(SALE_RESPONSE);
+        when(saleRepository.findAllSales(PAGEABLE)).thenReturn(SALE_PAGE);
+        when(pageMapper.toSaleResponse(SALE_PAGE)).thenReturn(PAGE_SALE_RESPONSE);
 
-        List<SaleResponse> actualResponseDtoList = saleService.findAll();
+        PageableResponse<SaleResponse> actualResponsePage  = saleService.findAll(PAGE_NUMBER,PAGE_SIZE);
 
-        assertEquals(1, actualResponseDtoList.size());
-        assertEquals(SALE_RESPONSE, actualResponseDtoList.get(0));
-        verify(saleRepository, times(1)).findAll();
+        assertEquals(1, actualResponsePage.totalElements());
+        assertEquals(SALE_RESPONSE, actualResponsePage.content().get(0));
+        verify(saleRepository, times(1)).findAllSales(PAGEABLE);
     }
 
     @Test
     public void getAllSales_WithNoSales_ShouldReturnEmptyList() {
-        when(saleRepository.findAll()).thenReturn(Collections.emptyList());
+        when(saleRepository.findAllSales(PAGEABLE)).thenReturn(EMPTY_SALE_PAGE);
+        when(pageMapper.toSaleResponse(EMPTY_SALE_PAGE)).thenReturn(PAGE_SALE_EMPTY_RESPONSE);
 
-        List<SaleResponse> actualResponseDtoList = saleService.findAll();
+        PageableResponse<SaleResponse> actualResponsePage = saleService.findAll(PAGE_NUMBER,PAGE_SIZE);
 
-        assertEquals(0, actualResponseDtoList.size());
-        verify(saleRepository, times(1)).findAll();
+        assertEquals(0, actualResponsePage.totalElements());
+        assertTrue(actualResponsePage.content().isEmpty());
+        verify(saleRepository, times(1)).findAllSales(PAGEABLE);
     }
 }
