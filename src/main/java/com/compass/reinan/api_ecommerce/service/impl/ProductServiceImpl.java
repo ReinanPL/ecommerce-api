@@ -16,13 +16,11 @@ import com.compass.reinan.api_ecommerce.service.ProductService;
 import com.compass.reinan.api_ecommerce.service.mapper.PageableMapper;
 import com.compass.reinan.api_ecommerce.service.mapper.ProductMapper;
 import com.compass.reinan.api_ecommerce.util.EntityUtils;
-import io.micrometer.common.util.StringUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -117,15 +115,13 @@ public class ProductServiceImpl implements ProductService {
     @Transactional(readOnly = true)
     @Cacheable("products")
     public PageableResponse<ProductResponse> findAll(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return pageableMapper.toProductResponse(productRepository.findAllProducts(pageable));
+        return pageableMapper.toProductResponse(productRepository.findAllProducts(PageRequest.of(page, size)));
     }
 
     @Transactional(readOnly = true)
     @Cacheable("products")
     public PageableResponse<ProductActiveResponse> findAllProductActives(Long categoryId, int page, int size, BigDecimal min, BigDecimal max) {
-        Pageable pageable = PageRequest.of(page, size);
-        return pageableMapper.toProductActiveResponse(productRepository.findProductsActiveByFilters(categoryId, min, max, pageable));
+        return pageableMapper.toProductActiveResponse(productRepository.findProductsActiveByFilters(categoryId, min, max, PageRequest.of(page, size)));
     }
 
     private void inactiveProduct(Product product) {

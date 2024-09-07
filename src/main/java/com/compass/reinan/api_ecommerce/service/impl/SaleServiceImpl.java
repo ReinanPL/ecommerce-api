@@ -22,8 +22,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -134,8 +134,7 @@ public class SaleServiceImpl implements SaleService {
     @Cacheable("sales")
     @Transactional(readOnly = true)
     public PageableResponse<SaleResponse> findAll(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return pageableMapper.toSaleResponse(saleRepository.findAllSales(pageable));
+        return pageableMapper.toSaleResponse(saleRepository.findAllSales(PageRequest.of(page, size)));
     }
 
     private List<CreateItemSaleRequest> aggregateItems(List<CreateItemSaleRequest> items) {

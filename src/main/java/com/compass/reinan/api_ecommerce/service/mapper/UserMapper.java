@@ -16,6 +16,7 @@ import java.time.Instant;
 @Mapper(componentModel = "spring")
 public interface UserMapper {
     @Mapping(target = "address.state", source = "address.state", qualifiedByName = "toUpperCase")
+    @Mapping(target = "address.id", ignore = true)
     @Mapping(target = "role", ignore = true)
     @Mapping(target = "sales", ignore = true)
     @Mapping(target = "resetPasswordToken", ignore = true)
