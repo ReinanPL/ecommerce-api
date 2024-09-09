@@ -76,13 +76,9 @@ public class SaleServiceImpl implements SaleService {
     @CacheEvict(value = "sales", key = "#id", allEntries = true)
     public void deleteById(Long id) {
         var sale = EntityUtils.getEntityOrThrow(id, Sale.class, saleRepository);
-
-        sale.getItems().forEach(deleteItem -> {
-            var product = EntityUtils.getEntityOrThrow(deleteItem.getProduct().getId(), Product.class, productRepository);
-            product.setQuantityInStock(product.getQuantityInStock() + deleteItem.getQuantity());
-            productRepository.save(product);
-        });
-
+        if(sale.getStatus() == Status.PROCESSING) {
+            reStockProductSale(sale);
+        }
         saleRepository.delete(sale);
     }
 
@@ -96,6 +92,7 @@ public class SaleServiceImpl implements SaleService {
         checkIfSaleIsCancelled(sale);
 
         sale.setStatus(Status.CANCELED);
+        reStockProductSale(sale);
 
         return saleMapper.toResponse(saleRepository.save(sale));
     }
@@ -205,6 +202,14 @@ public class SaleServiceImpl implements SaleService {
         validateProductQuantity(product, quantity);
         sale.getItems().add(new ItemSale(new ItemSalePK(sale, product), quantity, product.getPrice()));
         product.setQuantityInStock(product.getQuantityInStock() - quantity);
+    }
+
+    private void reStockProductSale(Sale sale){
+        sale.getItems().forEach(deleteItem -> {
+            var product = EntityUtils.getEntityOrThrow(deleteItem.getProduct().getId(), Product.class, productRepository);
+            product.setQuantityInStock(product.getQuantityInStock() + deleteItem.getQuantity());
+            productRepository.save(product);
+        });
     }
 
     private void validateProductQuantity(Product product, int requestedQuantity) {

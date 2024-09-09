@@ -44,7 +44,7 @@ public class SaleControllerImpl implements SaleController {
 
     @Override
     @PreAuthorize("hasAuthority('SCOPE_ADMIN') or hasAuthority('SCOPE_CLIENT')")
-    @PatchMapping("/{id}")
+    @PatchMapping("/{id}/cancel")
     public ResponseEntity<SaleResponse> cancelSale(@PathVariable Long id) {
         return ResponseEntity.ok().body(saleService.cancelSale(id));
     }

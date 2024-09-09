@@ -32,14 +32,14 @@ public class ProductControllerImpl implements ProductController {
 
     @Override
     @PreAuthorize("hasAuthority('SCOPE_ADMIN') or hasAuthority('SCOPE_CLIENT')")
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<ProductActiveResponse> findProductById(@PathVariable Long id) {
         return ResponseEntity.ok().body(productService.findById(id));
     }
 
     @Override
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProductById(@PathVariable Long id) {
         productService.deleteById(id);
         return ResponseEntity.noContent().build();
@@ -47,14 +47,14 @@ public class ProductControllerImpl implements ProductController {
 
     @Override
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
-    @PutMapping("{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<ProductResponse> updateProduct(@PathVariable Long id, @RequestBody @Valid UpdateProductRequest productRequest) {
         return ResponseEntity.ok().body(productService.update(id, productRequest));
     }
 
     @Override
     @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
-    @PatchMapping("{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<ProductResponse> activeProduct(@PathVariable Long id) {
         return ResponseEntity.ok().body(productService.activeProduct(id));
     }
