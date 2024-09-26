@@ -15,11 +15,13 @@
 
 - [**Spring Boot**](https://spring.io/projects/spring-boot)
 - [**Spring Data JPA**](https://spring.io/projects/spring-data-jpa)
-- [**SpringDoc OpenAPI 3**](https://springdoc.org/v2/#spring-webflux-support)
+- [**OAuth2**](https://docs.spring.io/spring-security/reference/servlet/oauth2/index.html)
 - [**MySQL**](https://dev.mysql.com/downloads/)
 - [**Redis**](https://spring.io/projects/spring-data-redis)
-- [**OAuth2**](https://docs.spring.io/spring-security/reference/servlet/oauth2/index.html)
-
+- [**MapStruct**](https://mapstruct.org/)
+- [**Mockito**](https://site.mockito.org/)
+- [**SpringDoc OpenAPI 3**](https://springdoc.org/v2/#spring-webflux-support)
+- [**Swagger**](https://swagger.io/)
 
 ## 📜 Practices Adopted
 
@@ -29,7 +31,8 @@
 - **Exception Handling**: Standardized error handling across the application.
 - **Security**: JWT authentication and authorization for secure access.
 - **Caching**: Efficient data retrieval using Redis for caching.
-- **Swagger**: Automatic Swagger generation with OpenAPI 3.
+- **Documentation**: API documentation with Swagger and OpenAPI 3.
+- **Unit Testing**: Employs Mockito to write unit tests that isolate and verify the functionality of individual components.
 
 ## 🏛️ Architecture
 
@@ -56,3 +59,9 @@
    <br><br>
     The API will be available at [localhost:8080](http://localhost:8080).
     The Swagger UI for API documentation can be accessed at [localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
+    <br><br>
+    To access the API with accounts already registered in the database, use the following login details:
+    <br>
+    Admin - CPF: 25916279086 | Password:123456
+    <br>
+    Client - CPF: 63235354085 | Password:123456
