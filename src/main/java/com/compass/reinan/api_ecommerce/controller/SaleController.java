@@ -5,7 +5,7 @@ import com.compass.reinan.api_ecommerce.domain.dto.sale.request.CreateSaleReques
 import com.compass.reinan.api_ecommerce.domain.dto.sale.response.SaleResponse;
 import com.compass.reinan.api_ecommerce.domain.dto.sale.request.UpdateItemSaleRequest;
 import com.compass.reinan.api_ecommerce.domain.dto.sale.request.UpdatePatchItemSaleRequest;
-import com.compass.reinan.api_ecommerce.exception.ErrorMessage;
+import com.compass.reinan.api_ecommerce.exception.handler.ErrorMessage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;

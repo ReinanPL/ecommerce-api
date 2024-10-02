@@ -5,7 +5,7 @@ import com.compass.reinan.api_ecommerce.domain.dto.product.request.CreateProduct
 import com.compass.reinan.api_ecommerce.domain.dto.product.response.ProductActiveResponse;
 import com.compass.reinan.api_ecommerce.domain.dto.product.response.ProductResponse;
 import com.compass.reinan.api_ecommerce.domain.dto.product.request.UpdateProductRequest;
-import com.compass.reinan.api_ecommerce.exception.ErrorMessage;
+import com.compass.reinan.api_ecommerce.exception.handler.ErrorMessage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;

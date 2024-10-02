@@ -2,7 +2,7 @@ package com.compass.reinan.api_ecommerce.controller;
 
 import com.compass.reinan.api_ecommerce.domain.dto.security.UserLoginRequest;
 import com.compass.reinan.api_ecommerce.domain.dto.security.UserTokenResponse;
-import com.compass.reinan.api_ecommerce.exception.ErrorMessage;
+import com.compass.reinan.api_ecommerce.exception.handler.ErrorMessage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;

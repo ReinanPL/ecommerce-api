@@ -1,10 +1,10 @@
 package com.compass.reinan.api_ecommerce.service.impl;
 
-import com.compass.reinan.api_ecommerce.domain.dto.user.response.PasswordTokenResponse;
 import com.compass.reinan.api_ecommerce.exception.EntityNotFoundException;
 import com.compass.reinan.api_ecommerce.exception.PasswordInvalidException;
 import com.compass.reinan.api_ecommerce.exception.PasswordTokenViolationException;
 import com.compass.reinan.api_ecommerce.repository.UserRepository;
+import com.compass.reinan.api_ecommerce.service.SendMailService;
 import com.compass.reinan.api_ecommerce.service.UserRecoveryPasswordService;
 import com.compass.reinan.api_ecommerce.service.mapper.UserMapper;
 import lombok.AllArgsConstructor;
@@ -23,21 +23,23 @@ public class UserRecoveryPasswordServiceImpl implements UserRecoveryPasswordServ
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper mapper;
+    private final SendMailService mailService;
 
     @Override
     @Transactional
-    public PasswordTokenResponse sendEmailToResetUserPassword(String email) {
+    public void sendEmailToResetUserPassword(String email) {
         var user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("User with emaill: '%s' not found", email)));
 
         var token = UUID.randomUUID().toString();
         user.setResetPasswordToken(token);
 
-        var tokenInstant = Instant.now().plusSeconds(1600);
+        var tokenInstant = Instant.now().plusSeconds(1800);
         user.setTokenExpirationDate(tokenInstant);
 
         userRepository.save(user);
-        return mapper.toResponsePassword(token, tokenInstant);
+
+        mailService.sendMail(token, email);
     }
 
     @Override

@@ -2,7 +2,7 @@ package com.compass.reinan.api_ecommerce.controller;
 
 import com.compass.reinan.api_ecommerce.domain.dto.category.CategoryResponse;
 import com.compass.reinan.api_ecommerce.domain.dto.category.CreateCategoryRequest;
-import com.compass.reinan.api_ecommerce.exception.ErrorMessage;
+import com.compass.reinan.api_ecommerce.exception.handler.ErrorMessage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;

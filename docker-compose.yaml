@@ -63,6 +63,8 @@ services:
       MYSQL_PASSWORD: '${MYSQL_PASSWORD}'
       REDIS_HOST: '${REDIS_HOST}'
       REDIS_PORT: '${REDIS_PORT}'
+      EMAIL_SENDER: '${EMAIL_SENDER}'
+      PASSWORD_SENDER: '${PASSWORD_SENDER}'
     restart: on-failure
     networks:
       - network

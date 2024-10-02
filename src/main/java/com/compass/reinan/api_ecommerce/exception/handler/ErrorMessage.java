@@ -1,4 +1,4 @@
-package com.compass.reinan.api_ecommerce.exception;
+package com.compass.reinan.api_ecommerce.exception.handler;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.servlet.http.HttpServletRequest;

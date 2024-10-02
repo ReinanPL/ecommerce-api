@@ -25,8 +25,6 @@ public interface UserMapper {
 
     UserResponse toResponse(User user);
 
-    PasswordTokenResponse toResponsePassword(String token, Instant expirationDate);
-
     @Mapping(target = "state", source = "state", qualifiedByName = "toUpperCase")
     @Mapping(target = "id", ignore = true)
     Address toEntityAddress(UpdateAddressRequest addressDto);

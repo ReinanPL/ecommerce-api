@@ -1,10 +1,8 @@
 package com.compass.reinan.api_ecommerce.controller;
 
 import com.compass.reinan.api_ecommerce.domain.dto.user.request.ForgetPasswordEmailRequest;
-import com.compass.reinan.api_ecommerce.domain.dto.user.response.PasswordTokenResponse;
 import com.compass.reinan.api_ecommerce.domain.dto.user.request.ForgetPasswordRequest;
-import com.compass.reinan.api_ecommerce.domain.dto.user.request.UpdateEmailRequest;
-import com.compass.reinan.api_ecommerce.exception.ErrorMessage;
+import com.compass.reinan.api_ecommerce.exception.handler.ErrorMessage;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -31,12 +29,11 @@ public interface UserRecoveryPasswordController {
             ),
             responses = {
                     @ApiResponse(
-                            responseCode = "200",
+                            responseCode = "204",
                             description = "Password reset email sent successfully.",
                             content = @Content(
                                     mediaType = "application/json",
-                                    schema = @Schema(implementation = PasswordTokenResponse.class),
-                                    examples = @ExampleObject(value = "{\"token\":\"example-token\",\"message\":\"Password reset link sent to your email.\"}")
+                                    schema = @Schema(implementation = Void.class)
                             )
                     ),
                     @ApiResponse(
@@ -59,7 +56,7 @@ public interface UserRecoveryPasswordController {
                     )
             }
     )
-    ResponseEntity<PasswordTokenResponse> sendEmailToResetUserPassword(ForgetPasswordEmailRequest emailRequest);
+    ResponseEntity<Void> sendEmailToResetUserPassword(ForgetPasswordEmailRequest emailRequest);
 
     @Operation(
             summary = "Reset the user's password using a token",

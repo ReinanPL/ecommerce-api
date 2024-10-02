@@ -19,8 +19,9 @@ public class UserRecoveryPasswordControllerImpl implements UserRecoveryPasswordC
     private final UserRecoveryPasswordService passwordService;
 
     @PostMapping("/sendEmail")
-    public ResponseEntity<PasswordTokenResponse> sendEmailToResetUserPassword(@RequestBody @Valid ForgetPasswordEmailRequest emailRequest) {
-        return  ResponseEntity.ok().body(passwordService.sendEmailToResetUserPassword(emailRequest.email()));
+    public ResponseEntity<Void> sendEmailToResetUserPassword(@RequestBody @Valid ForgetPasswordEmailRequest emailRequest) {
+        passwordService.sendEmailToResetUserPassword(emailRequest.email());
+        return  ResponseEntity.noContent().build();
     }
 
     @PostMapping("/reset/")
