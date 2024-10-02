@@ -35,7 +35,8 @@ public class SaleControllerImpl implements SaleController {
         return ResponseEntity.ok().body(saleService.findById(id));
     }
 
-    @Override@PreAuthorize("hasAuthority('SCOPE_ADMIN')")
+    @Override
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteSaleById(@PathVariable Long id) {
         saleService.deleteById(id);
@@ -47,6 +48,13 @@ public class SaleControllerImpl implements SaleController {
     @PatchMapping("/{id}/cancel")
     public ResponseEntity<SaleResponse> cancelSale(@PathVariable Long id) {
         return ResponseEntity.ok().body(saleService.cancelSale(id));
+    }
+
+    @Override
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
+    @PatchMapping("/{id}/complete")
+    public ResponseEntity<SaleResponse> completeSale(@PathVariable Long id) {
+        return ResponseEntity.ok().body(saleService.completeSale(id));
     }
 
     @Override

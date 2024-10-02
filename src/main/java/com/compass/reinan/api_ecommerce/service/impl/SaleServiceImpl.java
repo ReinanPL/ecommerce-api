@@ -22,6 +22,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.AccessDeniedException;
@@ -30,6 +31,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.swing.text.html.Option;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -76,9 +78,10 @@ public class SaleServiceImpl implements SaleService {
     @CacheEvict(value = "sales", key = "#id", allEntries = true)
     public void deleteById(Long id) {
         var sale = EntityUtils.getEntityOrThrow(id, Sale.class, saleRepository);
-        if(sale.getStatus() == Status.PROCESSING) {
-            reStockProductSale(sale);
-        }
+        Optional.of(sale.getStatus().equals(Status.CANCELED))
+                .filter(status -> status)
+                .orElseThrow(() -> new EntityActiveStatusException("To delete a sale it needs to be canceled"));
+
         saleRepository.delete(sale);
     }
 
@@ -91,8 +94,33 @@ public class SaleServiceImpl implements SaleService {
         checkUserAuthorization(sale.getUser().getCpf());
         checkIfSaleIsCancelled(sale);
 
+        Optional.of(sale.getStatus().equals(Status.COMPLETED))
+                .filter(status -> !status)
+                .orElseThrow(() -> new EntityActiveStatusException("It is not possible to cancel a sale that has already been completed"));
+
         sale.setStatus(Status.CANCELED);
-        reStockProductSale(sale);
+        return saleMapper.toResponse(saleRepository.save(sale));
+    }
+
+    @Override
+    @Transactional
+    @Caching(put = @CachePut(value = "sales", key = "#id"), evict = @CacheEvict(value = "products", allEntries = true))
+    public SaleResponse completeSale(Long id) {
+        var sale = EntityUtils.getEntityOrThrow(id, Sale.class, saleRepository);
+
+        checkUserAuthorization(sale.getUser().getCpf());
+        checkIfSaleIsCancelled(sale);
+
+        Optional.of(sale.getStatus().equals(Status.COMPLETED))
+                .filter(status -> !status)
+                .orElseThrow(() -> new EntityActiveStatusException("Sale status is already completed"));
+
+        sale.setStatus(Status.COMPLETED);
+
+        sale.getItems().forEach(itemRequest -> {
+            var product = EntityUtils.getEntityOrThrow(itemRequest.getProduct().getId(), Product.class, productRepository);
+            product.setQuantityInStock(product.getQuantityInStock() - itemRequest.getQuantity());
+        });
 
         return saleMapper.toResponse(saleRepository.save(sale));
     }
@@ -178,9 +206,6 @@ public class SaleServiceImpl implements SaleService {
                     .filter(item -> item.getProduct().equals(product))
                     .findFirst().orElseThrow(() ->new EntityNotFoundException("Item not found in sale with product id: " + productId));
 
-            product.setQuantityInStock(product.getQuantityInStock() + itemToRemove.getQuantity());
-            productRepository.save(product);
-
             sale.getItems().remove(itemToRemove);
         });
     }
@@ -190,9 +215,6 @@ public class SaleServiceImpl implements SaleService {
 
         if (newQuantity > oldQuantity) {
             validateProductQuantity(product, newQuantity);
-            product.setQuantityInStock(product.getQuantityInStock() - (newQuantity - oldQuantity));
-        } else if (newQuantity < oldQuantity) {
-            product.setQuantityInStock(product.getQuantityInStock() + (oldQuantity - newQuantity));
         }
 
         existingItem.setQuantity(newQuantity);
@@ -201,7 +223,6 @@ public class SaleServiceImpl implements SaleService {
     private void addNewItemToSale(Sale sale, Product product, int quantity) {
         validateProductQuantity(product, quantity);
         sale.getItems().add(new ItemSale(new ItemSalePK(sale, product), quantity, product.getPrice()));
-        product.setQuantityInStock(product.getQuantityInStock() - quantity);
     }
 
     private void reStockProductSale(Sale sale){

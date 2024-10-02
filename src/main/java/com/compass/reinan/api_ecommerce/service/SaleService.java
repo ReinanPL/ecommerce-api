@@ -11,6 +11,7 @@ public interface SaleService {
     SaleResponse findById(Long id);
     void deleteById(Long id);
     SaleResponse cancelSale(Long id);
+    SaleResponse completeSale(Long id);
     SaleResponse updateSale(Long id, UpdateItemSaleRequest updateSaleRequest);
     SaleResponse patchSale(Long id, UpdatePatchItemSaleRequest patchSaleRequest);
     PageableResponse<SaleResponse> findAll(int page, int size);

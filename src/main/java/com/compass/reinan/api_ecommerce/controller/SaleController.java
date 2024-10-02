@@ -240,6 +240,62 @@ public interface SaleController {
     ResponseEntity<SaleResponse> cancelSale(Long id);
 
     @Operation(
+            summary = "Complete status sale by ID",
+            description = "Complete status sale by its ID. Accessible only to admin.",
+            security = @SecurityRequirement(name = "security"),
+            parameters = {
+                    @Parameter(name = "id", description = "The id of the sale to complete status", required = true)
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Sale status updated to 'COMPLETED' successfully.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = SaleResponse.class),
+                                    examples = @ExampleObject(value = "[{\"id\":1,\"date_sale\":\"2024-09-01T00:00:00Z\",\"user_cpf\":\"43721493010\",\"status\":\"COMPLETED\",\"items\":[{\"product_id\":1,\"quantity\":2,\"price\":50.00}],\"total_value\":100.00}]")
+                            )
+                    ),@ApiResponse(
+                    responseCode = "401",
+                    description = "Unauthorized. The user is not authenticated or the authentication credentials are missing/invalid.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ErrorMessage.class),
+                            examples = @ExampleObject(value = "{\"error\":\"Unauthorized access.\"}")
+                    )
+            ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Forbidden. The authenticated user does not have permission to access this resource.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Access denied.\"}")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Sale with the specified ID not found.",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Sale not found.\"}")
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "409",
+                            description = "Sale is cancelled, cannot be completed status. / Sale is already completed",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorMessage.class),
+                                    examples = @ExampleObject(value = "{\"error\":\"Sale is cancelled, cannot be completed status. / Sale is already completed\"}")
+                            )
+                    )
+            }
+    )
+    ResponseEntity<SaleResponse> completeSale(Long id);
+
+    @Operation(
             summary = "Update an item in a sale",
             description = "Updates the items in a sale. Only the client associated with the sale or an admin can add or modify items.",
             security = @SecurityRequirement(name = "security"),
