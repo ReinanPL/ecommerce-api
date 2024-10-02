@@ -6,6 +6,7 @@ import com.compass.reinan.api_ecommerce.domain.dto.user.response.PasswordTokenRe
 import com.compass.reinan.api_ecommerce.domain.dto.user.request.ForgetPasswordRequest;
 import com.compass.reinan.api_ecommerce.domain.dto.user.request.UpdateEmailRequest;
 import com.compass.reinan.api_ecommerce.service.UserRecoveryPasswordService;
+import com.compass.reinan.api_ecommerce.util.MediaType;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,13 +19,15 @@ public class UserRecoveryPasswordControllerImpl implements UserRecoveryPasswordC
 
     private final UserRecoveryPasswordService passwordService;
 
-    @PostMapping("/sendEmail")
+    @PostMapping(value = "/sendEmail",
+            consumes = { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML  })
     public ResponseEntity<Void> sendEmailToResetUserPassword(@RequestBody @Valid ForgetPasswordEmailRequest emailRequest) {
         passwordService.sendEmailToResetUserPassword(emailRequest.email());
         return  ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/reset/")
+    @PostMapping(value = "/reset/",
+            consumes = { MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML  })
     public ResponseEntity<Void> resetUserPassword(@RequestParam(required = true) String token, @RequestBody @Valid ForgetPasswordRequest reset) {
         passwordService.resetUserPassword(token, reset.newPassword(), reset.confirmPassword());
         return ResponseEntity.noContent().build();
