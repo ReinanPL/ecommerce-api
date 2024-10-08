@@ -19,8 +19,8 @@ public class SpringDocOpenApiConfig {
     }
     private Info info(){
         return  new Info()
-                .title("Demo Park API")
-                .description("API for managing parking lots and their vehicles")
+                .title("E-Commerce API")
+                .description("API for managing products, stock, sales, and users within an e-commerce platform")
                 .version("1.0.0")
                 .contact(new Contact()
                         .name("Reinan")

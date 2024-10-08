@@ -13,6 +13,7 @@ import com.compass.reinan.api_ecommerce.exception.EntityNotFoundException;
 import com.compass.reinan.api_ecommerce.exception.InsufficientStockException;
 import com.compass.reinan.api_ecommerce.repository.ProductRepository;
 import com.compass.reinan.api_ecommerce.repository.SaleRepository;
+import com.compass.reinan.api_ecommerce.repository.StockReservationRepository;
 import com.compass.reinan.api_ecommerce.repository.UserRepository;
 import com.compass.reinan.api_ecommerce.service.SaleService;
 import com.compass.reinan.api_ecommerce.service.mapper.PageableMapper;
@@ -23,7 +24,6 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -31,7 +31,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.swing.text.html.Option;
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -42,12 +42,13 @@ public class SaleServiceImpl implements SaleService {
     private final SaleRepository saleRepository;
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
+    private final StockReservationRepository stockReservationRepository;
     private final SaleMapper saleMapper;
     private final PageableMapper pageableMapper;
 
     @Override
     @Transactional
-    @CacheEvict(value = "sales", key = "#id", allEntries = true)
+    @CacheEvict(value = {"sales", "products"}, key = "#id", allEntries = true)
     public SaleResponse save(CreateSaleRequest createSaleRequest) {
         var user = EntityUtils.getEntityOrThrow(createSaleRequest.user_cpf(), User.class, userRepository);
 
@@ -87,7 +88,7 @@ public class SaleServiceImpl implements SaleService {
 
     @Override
     @Transactional
-    @CachePut(value = "sales", key = "#id")
+    @Caching(put = @CachePut(value = "sales", key = "#id"), evict = @CacheEvict(value = "products", allEntries = true))
     public SaleResponse cancelSale(Long id) {
         var sale = EntityUtils.getEntityOrThrow(id, Sale.class, saleRepository);
 
@@ -99,6 +100,10 @@ public class SaleServiceImpl implements SaleService {
                 .orElseThrow(() -> new EntityActiveStatusException("It is not possible to cancel a sale that has already been completed"));
 
         sale.setStatus(Status.CANCELED);
+        var deleteReservation = stockReservationRepository.findBySale(sale);
+        for (StockReservation reservation : deleteReservation) {
+            stockReservationRepository.delete(reservation);
+        }
         return saleMapper.toResponse(saleRepository.save(sale));
     }
 
@@ -111,23 +116,20 @@ public class SaleServiceImpl implements SaleService {
         checkUserAuthorization(sale.getUser().getCpf());
         checkIfSaleIsCancelled(sale);
 
-        Optional.of(sale.getStatus().equals(Status.COMPLETED))
-                .filter(status -> !status)
+        Optional.of(sale.getStatus().equals(Status.PROCESSING))
+                .filter(status -> status)
                 .orElseThrow(() -> new EntityActiveStatusException("Sale status is already completed"));
 
         sale.setStatus(Status.COMPLETED);
 
-        sale.getItems().forEach(itemRequest -> {
-            var product = EntityUtils.getEntityOrThrow(itemRequest.getProduct().getId(), Product.class, productRepository);
-            product.setQuantityInStock(product.getQuantityInStock() - itemRequest.getQuantity());
-        });
+        confirmOrderPayment(sale);
 
         return saleMapper.toResponse(saleRepository.save(sale));
     }
 
     @Override
     @Transactional
-    @CachePut(value = "sales", key = "#id")
+    @Caching(put = @CachePut(value = "sales", key = "#id"), evict = @CacheEvict(value = "products", allEntries = true))
     public SaleResponse updateSale(Long id, UpdateItemSaleRequest updateSaleRequest) {
         var sale = EntityUtils.getEntityOrThrow(id, Sale.class, saleRepository);
 
@@ -142,7 +144,7 @@ public class SaleServiceImpl implements SaleService {
 
     @Override
     @Transactional
-    @CachePut(value = "sales", key = "#id")
+    @Caching(put = @CachePut(value = "sales", key = "#id"), evict = @CacheEvict(value = "products", allEntries = true))
     public SaleResponse patchSale(Long id, UpdatePatchItemSaleRequest patchSaleRequest) {
         var sale = EntityUtils.getEntityOrThrow(id, Sale.class, saleRepository);
 
@@ -187,11 +189,9 @@ public class SaleServiceImpl implements SaleService {
                     .filter(item -> item.getProduct().equals(product))
                     .findFirst()
                     .ifPresentOrElse(
-                            existingItem -> updateExistingItem(product, existingItem, itemRequest.quantity()),
+                            existingItem -> updateExistingItem(product, existingItem, itemRequest.quantity(), sale),
                             () -> addNewItemToSale(sale, product, itemRequest.quantity())
                     );
-
-            productRepository.save(product);
         });
     }
 
@@ -210,7 +210,7 @@ public class SaleServiceImpl implements SaleService {
         });
     }
 
-    private void updateExistingItem(Product product, ItemSale existingItem, int newQuantity) {
+    private void updateExistingItem(Product product, ItemSale existingItem, int newQuantity, Sale sale) {
         int oldQuantity = existingItem.getQuantity();
 
         if (newQuantity > oldQuantity) {
@@ -218,25 +218,43 @@ public class SaleServiceImpl implements SaleService {
         }
 
         existingItem.setQuantity(newQuantity);
+        reserveStock(product, existingItem.getQuantity(), sale);
     }
 
     private void addNewItemToSale(Sale sale, Product product, int quantity) {
         validateProductQuantity(product, quantity);
         sale.getItems().add(new ItemSale(new ItemSalePK(sale, product), quantity, product.getPrice()));
+        reserveStock(product, quantity, sale);
     }
 
-    private void reStockProductSale(Sale sale){
-        sale.getItems().forEach(deleteItem -> {
-            var product = EntityUtils.getEntityOrThrow(deleteItem.getProduct().getId(), Product.class, productRepository);
-            product.setQuantityInStock(product.getQuantityInStock() + deleteItem.getQuantity());
+    public void reserveStock(Product product, int quantity, Sale order) {
+        StockReservation reservation = new StockReservation();
+        reservation.setProduct(product);
+        reservation.setQuantity(quantity);
+        reservation.setSale(order);
+        reservation.setCreatedAt(Instant.now());
+
+        stockReservationRepository.save(reservation);
+    }
+
+    public void validateProductQuantity(Product product, int quantity) {
+        var reservedStock = stockReservationRepository.sumReservedStockByProduct(product);
+
+        var stockAvailable = product.getQuantityInStock() - (reservedStock != null ? reservedStock : 0);
+
+        Optional.of(stockAvailable > 0 && stockAvailable >= quantity)
+                .filter(isStock -> isStock)
+                .orElseThrow(() -> new InsufficientStockException(String.format("Product Id: '%s' doesn't have enough stock", product.getId())));
+    }
+
+    public void confirmOrderPayment(Sale sale) {
+        var reservations = stockReservationRepository.findBySale(sale);
+        for (StockReservation reservation : reservations) {
+            var product = reservation.getProduct();
+            product.setQuantityInStock(product.getQuantityInStock() - reservation.getQuantity());
             productRepository.save(product);
-        });
-    }
-
-    private void validateProductQuantity(Product product, int requestedQuantity) {
-        Optional.of(product.getQuantityInStock() < requestedQuantity)
-                .filter(stock -> !stock)
-                .orElseThrow(() -> new InsufficientStockException(String.format("Product Id: '%s' don't have enough stock " , product.getId())));
+            stockReservationRepository.delete(reservation);
+        }
     }
 
     private void checkIfSaleIsCancelled(Sale sale){

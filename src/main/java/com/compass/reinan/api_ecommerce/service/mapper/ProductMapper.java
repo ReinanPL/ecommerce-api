@@ -4,12 +4,15 @@ import com.compass.reinan.api_ecommerce.domain.dto.product.request.CreateProduct
 import com.compass.reinan.api_ecommerce.domain.dto.product.response.ProductActiveResponse;
 import com.compass.reinan.api_ecommerce.domain.dto.product.response.ProductResponse;
 import com.compass.reinan.api_ecommerce.domain.dto.product.request.UpdateProductRequest;
+import com.compass.reinan.api_ecommerce.domain.dto.sale.response.ItemSaleResponse;
 import com.compass.reinan.api_ecommerce.domain.entity.Product;
 import com.compass.reinan.api_ecommerce.repository.CategoryRepository;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring")
+import java.math.BigDecimal;
+import java.util.List;
+
 public interface ProductMapper {
     @Mapping(target = "category", ignore = true)
     @Mapping(target = "id", ignore = true)
@@ -27,4 +30,5 @@ public interface ProductMapper {
     @Mapping(target = "items", ignore = true)
     @Mapping(target = "category", ignore = true)
     Product updateToEntity(UpdateProductRequest request);
+
 }

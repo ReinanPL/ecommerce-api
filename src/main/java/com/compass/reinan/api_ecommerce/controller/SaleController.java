@@ -26,6 +26,7 @@ public interface SaleController {
             summary = "Create a new sale",
             description = "Registers a new sale in the system. Only users with CLIENT or ADMIN roles can create a sale.",
             security = @SecurityRequirement(name = "security"),
+            tags = "Post",
             requestBody = @RequestBody(
                     description = "Request body for a new sale.",
                     content = @Content(
@@ -87,6 +88,7 @@ public interface SaleController {
             summary = "Retrieve a sale by ID",
             description = "Fetches a sale record by its ID. Accessible only to the client who owns the sale or an admin.",
             security = @SecurityRequirement(name = "security"),
+            tags = "Get",
             parameters = {
                     @Parameter(name = "id", description = "The id of the sale to retrieve", required = true)
             },
@@ -144,6 +146,7 @@ public interface SaleController {
             summary = "Delete a sale by ID",
             description = "Deletes a sale record by its ID. Accessible only to admins.",
             security = @SecurityRequirement(name = "security"),
+            tags = "Delete",
             parameters = {
                     @Parameter(name = "id", description = "The id of the sale to delete", required = true)
             },
@@ -187,6 +190,7 @@ public interface SaleController {
             summary = "Cancel a sale by ID",
             description = "Cancels a sale by its ID. Accessible to the client who owns the sale or an admin.",
             security = @SecurityRequirement(name = "security"),
+            tags = "Patch",
             parameters = {
                     @Parameter(name = "id", description = "The id of the sale to cancel", required = true)
             },
@@ -243,6 +247,7 @@ public interface SaleController {
             summary = "Complete status sale by ID",
             description = "Complete status sale by its ID. Accessible only to admin.",
             security = @SecurityRequirement(name = "security"),
+            tags = "Patch",
             parameters = {
                     @Parameter(name = "id", description = "The id of the sale to complete status", required = true)
             },
@@ -299,6 +304,7 @@ public interface SaleController {
             summary = "Update an item in a sale",
             description = "Updates the items in a sale. Only the client associated with the sale or an admin can add or modify items.",
             security = @SecurityRequirement(name = "security"),
+            tags = "Put",
             parameters = {
                     @Parameter(name = "id", description = "The id of the sale to update", required = true)
             },
@@ -363,6 +369,7 @@ public interface SaleController {
             summary = "Patch items in a sale",
             description = "Patches the items in a sale by adding, removing, or modifying them. Accessible only to the client associated with the sale or an admin.",
             security = @SecurityRequirement(name = "security"),
+            tags = "Patch",
             parameters = {
                     @Parameter(name = "id", description = "The id of the sale to patch", required = true)
             },
@@ -428,6 +435,7 @@ public interface SaleController {
             summary = "List all sales",
             description = "Retrieves a paginated list of all sales records. This endpoint is accessible only to users with admin privileges. It returns detailed information about each sale, including the sale date, user information, status, items involved, and total value. Only for ADMINs",
             security = @SecurityRequirement(name = "security"),
+            tags = "Get",
             parameters = {
                     @Parameter(
                             name = "page",

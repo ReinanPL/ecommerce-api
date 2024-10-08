@@ -19,6 +19,7 @@ public interface UserRecoveryPasswordController {
     @Operation(
             summary = "Send a password reset email",
             description = "Sends a password reset email to the specified address. This email contains a link for resetting the password.",
+            tags = "Post",
             requestBody = @RequestBody(
                     description = "Request body for a email to the user.",
                     content = @Content(
@@ -61,6 +62,7 @@ public interface UserRecoveryPasswordController {
     @Operation(
             summary = "Reset the user's password using a token",
             description = "Resets the user's password using the provided token and new password. The token must be valid and not expired.",
+            tags = "Post",
             parameters = {
                     @Parameter(name = "token", description = "The token provided in the password reset email.", required = true)
             },

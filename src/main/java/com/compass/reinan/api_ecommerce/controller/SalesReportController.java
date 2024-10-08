@@ -23,6 +23,7 @@ public interface SalesReportController {
             summary = "Retrieve all sales by user for a given month and year",
             description = "Retrieve a report of sales by user for a given month. The month must be specified in the request, and the report will include all sales in that month. Only the CLIENT authenticated or the ADMIN can retrieve this resource.",
             security = @SecurityRequirement(name = "security"),
+            tags = "Get",
             parameters = {
                     @Parameter(name = "cpf", description = "The CPF of the user whose sales are being retrieved.", required = true),
                     @Parameter(name = "month", description = "The month for which sales are being retrieved.", required = true, example = "9"),
@@ -64,6 +65,7 @@ public interface SalesReportController {
             summary = "Retrieve sales by user for the current week",
             description = "Retrieve a report of sales by user for the current week, considering only business days (Monday through Friday). The week is determined based on the current date. Only the CLIENT authenticated or the ADMIN can retrieve this resource.",
             security = @SecurityRequirement(name = "security"),
+            tags = "Get",
             parameters = {
                     @Parameter(name = "cpf", description = "The CPF of the user whose sales are being retrieved.", required = true)
             },
@@ -103,6 +105,7 @@ public interface SalesReportController {
             summary = "Retrieve sales by user for a specific date",
             description = "Retrieve a report of sales by user for a given date. The date must be specified in the request, and the report will include all sales on that date. Only the CLIENT authenticated or the ADMIN can retrieve this resource. ",
             security = @SecurityRequirement(name = "security"),
+            tags = "Get",
             parameters = {
                     @Parameter(name = "cpf", description = "The CPF of the user whose sales are being retrieved.", required = true),
                     @Parameter(name = "day", description = "The day of the month for which sales are being retrieved.", required = true, example = "2"),

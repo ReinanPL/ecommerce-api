@@ -24,12 +24,13 @@ public interface UserController {
     @Operation(
             summary = "Create a new user",
             description = "Registers a new user in the system. Requires valid user details.",
+            tags = "Post",
             requestBody = @RequestBody(
                     description = "Request body for a new user.",
                     content = @Content(
                             mediaType = "application/json",
                             schema = @Schema(implementation = UpdateEmailRequest.class),
-                            examples = @ExampleObject(value = "{ \"cpf\": \"43721493010\", \"first_name\": \"Joao\", \"last_name\": \"Silva\", \"email\": \"joao.silva@example.com\", \"password\": \"123456\", \"confirm_password\": \"123456\", \"address\": { \"cep\": \"01234567\", \"city\": \"São Paulo\", \"state\": \"SP\", \"street\": \"Rua das Flores\", \"number\": \"123\", \"complement\": \"Apartamento 101\" }, \"role\":\"CLIENT\" }")
+                            examples = @ExampleObject(value = "{ \"cpf\": \"43721493010\", \"first_name\": \"Joao\", \"last_name\": \"Silva\", \"email\": \"joao.silva@example.com\", \"password\": \"123456\", \"confirm_password\": \"123456\", \"address\": { \"cep\": \"01234567\", \"city\": \"São Paulo\", \"state\": \"SP\", \"street\": \"Rua das Flores\", \"number\": \"123\", \"complement\": \"Apartamento 101\" }}")
                     )
             ),
             responses = {
@@ -68,6 +69,7 @@ public interface UserController {
             summary = "Retrieve a user by CPF",
             description = "Fetches user details based on the provided CPF.",
             security = @SecurityRequirement(name = "security"),
+            tags = "Get",
             parameters = {
                     @Parameter(name = "cpf", description = "The CPF of the user to retrieve.", required = true)
             },
@@ -119,6 +121,7 @@ public interface UserController {
             summary = "Delete a user by CPF",
             description = "Deletes a user based on the provided CPF.",
             security = @SecurityRequirement(name = "security"),
+            tags = "Delete",
             parameters = {
                     @Parameter(name = "cpf", description = "The CPF of the user to delete.", required = true)
             },
@@ -171,6 +174,7 @@ public interface UserController {
             summary = "Update a user email",
             description = "Updates the email address of a user identified by CPF.",
             security = @SecurityRequirement(name = "security"),
+            tags = "Patch",
             parameters = {
                     @Parameter(name = "cpf", description = "The CPF of the user whose email is to be updated.", required = true)
             },
@@ -245,6 +249,7 @@ public interface UserController {
             summary = "Update a user password",
             description = "Updates the password for a user identified by CPF.",
             security = @SecurityRequirement(name = "security"),
+            tags = "Patch",
             parameters = {
                     @Parameter(name = "cpf", description = "The CPF of the user whose password is to be updated.", required = true)
             },
@@ -314,6 +319,7 @@ public interface UserController {
             summary = "Update a user role",
             description = "Updates the role of a user identified by CPF.",
             security = @SecurityRequirement(name = "security"),
+            tags = "Patch",
             parameters = {
                     @Parameter(name = "cpf", description = "The CPF of the user whose role is to be updated.", required = true)
             },
@@ -388,6 +394,7 @@ public interface UserController {
             summary = "Update a user address",
             description = "Updates the address of a user identified by CPF.",
             security = @SecurityRequirement(name = "security"),
+            tags = "Patch",
             parameters = {
                     @Parameter(name = "cpf", description = "The CPF of the user whose address is to be updated.", required = true)
             },
@@ -453,6 +460,7 @@ public interface UserController {
             summary = "List all users",
             description = "Retrieves a list of all registered users in the system.",
             security = @SecurityRequirement(name = "security"),
+            tags = "Get",
             responses = {
                     @ApiResponse(
                             responseCode = "200",

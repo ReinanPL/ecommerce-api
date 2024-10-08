@@ -27,6 +27,7 @@ public interface ProductController {
             summary = "Create a new product",
             description = "Creates a new product. Only users with CLIENT or ADMIN roles can create a product.",
             security = @SecurityRequirement(name = "security"),
+            tags = "Post",
             requestBody = @RequestBody(
                     description = "Request body for a new product.",
                     content = @Content(
@@ -89,6 +90,7 @@ public interface ProductController {
             summary = "Retrieve a product by ID",
             description = "Retrieves a product by its ID. Accessible to any authenticated user.",
             security = @SecurityRequirement(name = "security"),
+            tags = "Get",
             parameters = {
                     @Parameter(name = "id", description = "The id of the product to retrieve", required = true)
             },
@@ -128,6 +130,7 @@ public interface ProductController {
             summary = "Delete a product by ID",
             description = "Deletes a product by its ID if it is not linked to any items. If the product is linked, it will be inactivated instead.",
             security = @SecurityRequirement(name = "security"),
+            tags = "Delete",
             parameters = {
                     @Parameter(name = "id", description = "The id of the product to delete", required = true)
             },
@@ -180,6 +183,7 @@ public interface ProductController {
             summary = "Update a product's details",
             description = "Updates the details of an existing product, such as its name or price.",
             security = @SecurityRequirement(name = "security"),
+            tags = "Put",
             parameters = {
                     @Parameter(name = "id", description = "The id of the product to update", required = true)
             },
@@ -254,6 +258,7 @@ public interface ProductController {
             summary = "Activate a product by ID",
             description = "Activates a product that is currently inactive.",
             security = @SecurityRequirement(name = "security"),
+            tags = "Patch",
             parameters = {
                     @Parameter(name = "id", description = "The id of the product to activate", required = true)
             },
@@ -311,6 +316,7 @@ public interface ProductController {
             summary = "List all products",
             description = "Retrieves a paginated list of all registered products. This endpoint returns all products, regardless of their active status or stock level. Only for ADMINs",
             security = @SecurityRequirement(name = "security"),
+            tags = "Get",
             parameters = {
                     @Parameter(name = "page", description = "The page number to retrieve (starting from 0).", required = true, schema = @Schema(type = "integer", example = "0")),
                     @Parameter(name = "size", description = "The number of products per page.", required = true, schema = @Schema(type = "integer", example = "10"))
@@ -353,6 +359,7 @@ public interface ProductController {
             summary = "List active products with filters",
             description = "Retrieves a paginated list of active products that match the specified filters for category and price range. This endpoint only returns products that are active and have a stock greater than 0.",
             security = @SecurityRequirement(name = "security"),
+            tags = "Get",
             parameters = {
                     @Parameter(name = "categoryId", description = "The ID of the category to filter products by. Pass null to ignore this filter.", schema = @Schema(type = "integer")),
                     @Parameter(name = "minPrice", description = "The minimum price of the products to include. Pass null to ignore this filter.", schema = @Schema(type = "number", format = "BigDecimal", example = "10.00")),

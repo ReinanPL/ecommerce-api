@@ -24,6 +24,7 @@ public interface CategoryController {
             summary = "Create a new category",
             description = "Creates a new category. Only users with CLIENT or ADMIN roles can create a category.",
             security = @SecurityRequirement(name = "security"),
+            tags = "Post",
             requestBody = @RequestBody(
                     description = "Request body for a new category name.",
                     content = @Content(
@@ -86,6 +87,7 @@ public interface CategoryController {
             summary = "Retrieve a category by ID",
             description = "Retrieves a category by its ID. Accessible to any authenticated user.",
             security = @SecurityRequirement(name = "security"),
+            tags = "Get",
             parameters = {
                     @Parameter(name = "id", description = "The id of the category to retrieve", required = true)
             },
@@ -134,6 +136,7 @@ public interface CategoryController {
             summary = "Delete a category by ID",
             description = "Deletes a category by its ID. If there are products linked to the category, it will be inactivated instead.",
             security = @SecurityRequirement(name = "security"),
+            tags = "Delete",
             parameters = {
                     @Parameter(name = "id", description = "The id of the category to delete", required = true)
             },
@@ -186,6 +189,7 @@ public interface CategoryController {
             summary = "Activate a category by ID",
             description = "Activates a category that is currently inactive.",
             security = @SecurityRequirement(name = "security"),
+            tags = "Patch",
             parameters = {
                     @Parameter(name = "id", description = "The id of the category to activate", required = true)
             },
@@ -243,6 +247,7 @@ public interface CategoryController {
             summary = "Update a category's name",
             description = "Updates the name of an existing category.",
             security = @SecurityRequirement(name = "security"),
+            tags = "Patch",
             parameters = {
                     @Parameter(name = "id", description = "The id of the category to update", required = true)
             },
@@ -317,6 +322,7 @@ public interface CategoryController {
             summary = "List all categories",
             description = "Retrieves a list of all registered categories.",
             security = @SecurityRequirement(name = "security"),
+            tags = "Get",
             responses = {
                     @ApiResponse(
                             responseCode = "200",

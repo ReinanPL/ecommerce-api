@@ -18,6 +18,7 @@ public interface AuthenticationController {
     @Operation(
             summary = "Authenticate a user",
             description = "Authenticates an existing user by validating their credentials and generates a JWT token for successful authentication. The token can be used to access protected resources.",
+            tags = "Post",
             requestBody = @RequestBody(
                     description = "Request body authenticate a user.",
                     content = @Content(
