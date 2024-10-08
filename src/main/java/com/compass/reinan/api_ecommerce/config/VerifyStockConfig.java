@@ -19,7 +19,7 @@ public class VerifyStockConfig {
     @Scheduled(fixedRate = 60000)
     @Transactional
     public void releaseExpiredReservations() {
-        var thirtyMinutesAgo = Instant.now().minusSeconds(120);
+        var thirtyMinutesAgo = Instant.now().minusSeconds(1600);
         stockReservationRepository.deleteExpiredReservations(thirtyMinutesAgo);
     }
 }
