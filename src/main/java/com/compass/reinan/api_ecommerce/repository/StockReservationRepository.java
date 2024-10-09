@@ -4,7 +4,6 @@ import com.compass.reinan.api_ecommerce.domain.entity.Product;
 import com.compass.reinan.api_ecommerce.domain.entity.Sale;
 import com.compass.reinan.api_ecommerce.domain.entity.StockReservation;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -15,10 +14,7 @@ public interface StockReservationRepository extends JpaRepository<StockReservati
 
     List<StockReservation> findBySale(Sale sale);
 
-
-    @Modifying
-    @Query("DELETE FROM StockReservation r WHERE r.createdAt < :expiryDate")
-    void deleteExpiredReservations(@Param("expiryDate") Instant expiryDate);
+    List<StockReservation> findAllByCreatedAtBefore(Instant expiryDate);
 
     @Query("SELECT SUM(sr.quantity) FROM StockReservation sr WHERE sr.product = :product")
     Integer sumReservedStockByProduct(@Param("product") Product product);

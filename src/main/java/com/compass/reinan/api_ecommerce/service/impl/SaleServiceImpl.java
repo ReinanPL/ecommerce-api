@@ -218,6 +218,13 @@ public class SaleServiceImpl implements SaleService {
         }
 
         existingItem.setQuantity(newQuantity);
+        var deleteStock = stockReservationRepository.findBySale(sale);
+        for(StockReservation stockReservation : deleteStock) {
+            if(stockReservation.getProduct().equals(product)){
+                stockReservationRepository.delete(stockReservation);
+            }
+        }
+
         reserveStock(product, existingItem.getQuantity(), sale);
     }
 
